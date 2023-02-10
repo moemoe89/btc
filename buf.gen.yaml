@@ -1,0 +1,16 @@
+version: v1
+plugins:
+  - name: go
+    out: .
+    strategy: directory
+    opt: module=github.com/moemoe89/btc
+  - name: go-grpc
+    out: .
+    strategy: directory
+    opt: module=github.com/moemoe89/btc
+  - name: validate
+    out: .
+    opt:
+      - lang=go
+      - validate_out="lang=go:./go/src/"
+      - module=github.com/moemoe89/btc

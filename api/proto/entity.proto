@@ -8,7 +8,7 @@ import "validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
 // Target of Go package.
-option go_package = "github.com/moemoe89/api/generated/go/btc";
+option go_package = "github.com/moemoe89/btc/api/go/grpc";
 
 // Transaction
 message Transaction {
