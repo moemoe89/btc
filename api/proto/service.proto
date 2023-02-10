@@ -14,10 +14,10 @@ option go_package = "github.com/moemoe89/btc/api/go/grpc";
 // BTCService is a service that handles BTC data.
 service BTCService {
   // CreateTransaction creates a new record for BTC transaction.
-  // Only single transaction will created by this RPC for a specific User.
+  // Only single transaction will create by this RPC for a specific User.
   rpc CreateTransaction(CreateTransactionRequest) returns (e.Transaction) {}
   // ListTransaction get the list of records for BTC transaction.
-  // The record can be filter by specific User.
+  // The record can be filtered by specific User.
   rpc ListTransaction(ListTransactionRequest) returns (ListTransactionResponse) {}
   // GetUserBalance get the latest balance for a specific User.
   rpc GetUserBalance(GetUserBalanceRequest) returns (e.UserBalance) {}
