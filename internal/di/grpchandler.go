@@ -6,5 +6,5 @@ import (
 
 // GetBTCGRPCHandler returns BTCServiceServer handler.
 func GetBTCGRPCHandler() grpchandler.BTCServiceServer {
-	return grpchandler.NewBTCHandler()
+	return grpchandler.NewBTCHandler(GetBTCUsecase())
 }
