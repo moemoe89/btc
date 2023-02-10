@@ -1,0 +1,36 @@
+name: Generate Proto
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Generate proto
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name : Install Dependencies
+        run: |
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+          go install google.golang.org/protobuf/cmd/protoc-gen-go
+          go install github.com/envoyproxy/protoc-gen-validate
+      - name: Install Buf
+        uses: bufbuild/buf-setup-action@v1.14.0
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          version: '3.19.2'
+      - name: Generate Proto
+        run: |
+          buf generate
+      - name: Commit files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A .
+          git commit -am "Generate Code"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
