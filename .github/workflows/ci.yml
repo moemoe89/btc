@@ -1,0 +1,10 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  generate-proto:
+    uses: './.github/workflows/generate-proto.yml'
