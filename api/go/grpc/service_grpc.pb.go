@@ -23,10 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BTCServiceClient interface {
 	// CreateTransaction creates a new record for BTC transaction.
-	// Only single transaction will created by this RPC for a specific User.
+	// Only single transaction will create by this RPC for a specific User.
 	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*Transaction, error)
 	// ListTransaction get the list of records for BTC transaction.
-	// The record can be filter by specific User.
+	// The record can be filtered by specific User.
 	ListTransaction(ctx context.Context, in *ListTransactionRequest, opts ...grpc.CallOption) (*ListTransactionResponse, error)
 	// GetUserBalance get the latest balance for a specific User.
 	GetUserBalance(ctx context.Context, in *GetUserBalanceRequest, opts ...grpc.CallOption) (*UserBalance, error)
@@ -72,10 +72,10 @@ func (c *bTCServiceClient) GetUserBalance(ctx context.Context, in *GetUserBalanc
 // for forward compatibility
 type BTCServiceServer interface {
 	// CreateTransaction creates a new record for BTC transaction.
-	// Only single transaction will created by this RPC for a specific User.
+	// Only single transaction will create by this RPC for a specific User.
 	CreateTransaction(context.Context, *CreateTransactionRequest) (*Transaction, error)
 	// ListTransaction get the list of records for BTC transaction.
-	// The record can be filter by specific User.
+	// The record can be filtered by specific User.
 	ListTransaction(context.Context, *ListTransactionRequest) (*ListTransactionResponse, error)
 	// GetUserBalance get the latest balance for a specific User.
 	GetUserBalance(context.Context, *GetUserBalanceRequest) (*UserBalance, error)
