@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package e; // entities
+
+// Import https://github.com/bufbuild/protoc-gen-validate
+import "validate/validate.proto";
+// Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp
+import "google/protobuf/timestamp.proto";
+
+// Target of Go package.
+option go_package = "github.com/moemoe89/api/generated/go/btc";
+
+// Transaction
+message Transaction {
+  // The ID of User.
+  int64 user_id = 1;
+  // The date and time of the created transaction.
+  google.protobuf.Timestamp datetime = 2;
+  // The amount of the transaction, should greater than 0.
+  float amount = 3;
+}
+
+// UserBalance
+message UserBalance {
+  // The latest balance of User.
+  float balance = 1;
+}
