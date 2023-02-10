@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+// Import entity proto.
+import "entity.proto";
+// Import https://github.com/bufbuild/protoc-gen-validate
+import "validate/validate.proto";
+// Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp
+import "google/protobuf/timestamp.proto";
+
+// Target of Go package.
+option go_package = "github.com/moemoe89/api/generated/go/btc";
+
+// BTCService is a service that handles BTC data.
+service BTCService {
+  // CreateTransaction creates a new record for BTC transaction.
+  // Only single transaction will created by this RPC for a specific User.
+  rpc CreateTransaction(CreateTransactionRequest) returns (e.Transaction) {}
+  // ListTransaction get the list of records for BTC transaction.
+  // The record can be filter by specific User.
+  rpc ListTransaction(ListTransactionRequest) returns (e.ListTransactionResponse) {}
+  // GetUserBalance get the latest balance for a specific User.
+  rpc GetUserBalance(GetUserBalanceRequest) returns (e.UserBalance) {}
+}
+
+// CreateTransactionRequest
+message CreateTransactionRequest {
+  // (Required) The ID of User.
+  int64 user_id = 1 [(validate.rules).int64.gte = 1];
+  // (Required) The date and time of the created transaction.
+  google.protobuf.Timestamp datetime = 2 [(validate.rules).timestamp.required = true];
+  // (Required) The amount of the transaction, should greater than 0.
+  float amount = 3 [(validate.rules).float = {gt: 0}];
+}
+
+// ListTransactionRequest
+message ListTransactionRequest {
+  // (Required) The ID of User.
+  int64 user_id = 1 [(validate.rules).int64.gte = 1];
+}
+
+// GetUserBalanceRequest
+message GetUserBalanceRequest {
+  // (Required) The ID of User.
+  int64 user_id = 1 [(validate.rules).int64.gte = 1];
+}
