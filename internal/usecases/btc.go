@@ -22,5 +22,5 @@ func (u *btcUsecase) ListTransaction(ctx context.Context, userID int64) (*rpc.Li
 
 // GetUserBalance get the latest balance for a specific User.
 func (u *btcUsecase) GetUserBalance(ctx context.Context, userID int64) (*rpc.UserBalance, error) {
-	return nil, errors.New("unimplemented")
+	return u.btcRepo.GetUserBalance(ctx, userID)
 }
