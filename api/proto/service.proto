@@ -1,3 +1,4 @@
+// service
 syntax = "proto3";
 
 // Import entity proto.

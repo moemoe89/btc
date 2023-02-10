@@ -6,5 +6,9 @@ on:
       - '**'
 
 jobs:
+  lint:
+    uses: './.github/workflows/lint.yml'
   generate-proto:
+    needs:
+      - lint
     uses: './.github/workflows/generate-proto.yml'
