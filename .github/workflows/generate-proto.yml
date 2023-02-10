@@ -4,8 +4,29 @@ on:
   workflow_call:
 
 jobs:
+  check-commit:
+    name: Check for generated commit
+    runs-on: ubuntu-latest
+    outputs:
+      is_generated_commit: ${{ steps.check.outputs.result }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: check
+        name: Check for generated commit
+        run: |
+          set +e
+          git log --oneline -n 1 | grep 'Generate Docs'
+          if [[ $? -eq 1 ]]; then
+            echo 'last commit is a target.'
+            echo "result=true" >> $GITHUB_OUTPUT
+          else
+            echo 'last commit is not a target.'
+            echo "result=false" >> $GITHUB_OUTPUT
+          fi
   lint:
     name: Generate proto
+    needs: check-commit
+    if: needs.check-commit.outputs.is_generated_commit == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,8 +48,18 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add -A .
-          git commit -am "Generate Code"
+          
+          # Check the status of the Git repository
+          status=$(git status --porcelain)
+
+          # If the repository is clean, exit with a non-zero status
+          if [ -z "$status" ]; then
+            echo "Nothing to commit, working tree clean"
+            exit 0
+          else
+            git add -A .
+            git commit -am "Generate Docs"
+          fi
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
