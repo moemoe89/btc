@@ -1,22 +1,22 @@
 package datastore
 
 var (
-	db *database
+	db *Database
 )
 
 // NewBaseRepo returns a base repository.
-func NewBaseRepo(db *database) *BaseRepo {
+func NewBaseRepo(db *Database) *BaseRepo {
 	return &BaseRepo{db: db}
 }
 
 // BaseRepo is a base repository.
 type BaseRepo struct {
-	db *database
+	db *Database
 }
 
-type database struct{}
+type Database struct{}
 
-func GetDatabase() *database {
+func GetDatabase() *Database {
 	if db != nil {
 		return db
 	}
