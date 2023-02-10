@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	rpc "github.com/moemoe89/btc/api/go/grpc"
+	"github.com/moemoe89/btc/internal/usecases"
 
 	health "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -16,13 +17,16 @@ type BTCServiceServer interface {
 }
 
 // NewBTCHandler returns a new gRPC handler that implements BTCServiceServer interface.
-func NewBTCHandler() BTCServiceServer {
-	return &btcHandler{}
+func NewBTCHandler(uc usecases.BTCUsecase) BTCServiceServer {
+	return &btcHandler{
+		uc: uc,
+	}
 }
 
 // btcHandler is a struct for handler.
 type btcHandler struct {
 	rpc.UnimplementedBTCServiceServer
+	uc usecases.BTCUsecase
 }
 
 // CreateTransaction creates a new record for BTC transaction.
