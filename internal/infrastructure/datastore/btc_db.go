@@ -33,5 +33,5 @@ func (r *btcRepo) ListTransaction(ctx context.Context, userID int64) (*rpc.ListT
 
 // GetUserBalance get the latest balance for a specific User.
 func (r *btcRepo) GetUserBalance(ctx context.Context, userID int64) (*rpc.UserBalance, error) {
-	return nil, errors.New("unimplemented")
+	return &rpc.UserBalance{}, nil
 }
