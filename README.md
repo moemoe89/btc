@@ -15,6 +15,8 @@ BTC Service handles BTC transaction and User balance related data.
     - [2. Install Development Utility Tools](#2-install-development-utility-tools)
 - [Running Unit Tests Locally](#running-unit-tests-locally)
     - [1. Run Unit Tests](#2-run-unit-tests)
+- [Documentation](#documentation)
+  - [Visualize Code Diagram](#visualize-code-diagram)
 
 <!-- /code_chunk_output -->
 
@@ -70,3 +72,15 @@ Check the Go and Proto code style using lint can be done with this command:
 ```sh
 make lint
 ```
+
+# Documentation
+
+## Visualize Code Diagram
+
+To help give a better understanding about reading the code
+such as relations with packages and types, here are some diagrams listed
+generated automatically using [https://github.com/ofabry/go-callvis](https://github.com/ofabry/go-callvis)
+
+<!-- start diagram doc -->
+
+<!-- end diagram doc -->

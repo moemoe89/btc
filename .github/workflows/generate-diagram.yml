@@ -1,4 +1,4 @@
-name: Generate Proto
+name: Generate Diagram
 
 on:
   workflow_call:
@@ -23,13 +23,16 @@ jobs:
             echo 'last commit is not a target.'
             echo "result=false" >> $GITHUB_OUTPUT
           fi
-  generate-proto:
-    name: Generate proto
+  generate-diagram:
+    name: Generate diagram
     needs: check-commit
     if: needs.check-commit.outputs.is_generated_commit == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Fetch Entire History
+        run: |
+          git fetch --unshallow
       - uses: actions/setup-go@v3
         with:
           go-version: '>=1.19.x'
@@ -41,22 +44,29 @@ jobs:
           key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-golang-
-      - name : Install Dependencies
+      - name: Install Go-Callvis
         run: |
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
-          go install google.golang.org/protobuf/cmd/protoc-gen-go
-          go install github.com/envoyproxy/protoc-gen-validate
-      - name: Install Buf
-        uses: bufbuild/buf-setup-action@v1.14.0
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v1
-        with:
-          version: '3.19.2'
-      - name: Generate Proto
+          git clone https://github.com/ofabry/go-callvis.git
+          cd go-callvis && make install
+      - name: Install pngquant
         run: |
-          buf generate
-      - name: Upload generated proto files
+          sudo apt-get update
+          sudo apt-get install pngquant
+      - name: Generate Diagram
+        run: |
+          make diagram
+      - name: Upload generated diagrams
         uses: actions/upload-artifact@v3
         with:
-          name: generated-proto
-          path: api
+          name: generated-diagram
+          path: docs
+      - name: Upload readme diagrams
+        uses: actions/upload-artifact@v3
+        with:
+          name: readme-diagram
+          path: scripts/generate-diagram
+      - name: Upload readme
+        uses: actions/upload-artifact@v3
+        with:
+          name: readme
+          path: README.md

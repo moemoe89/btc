@@ -3,9 +3,9 @@ syntax = "proto3";
 
 package e; // entities
 
-// Import https://github.com/bufbuild/protoc-gen-validate
+// Import https://github.com/bufbuild/protoc-gen-validate.
 import "validate/validate.proto";
-// Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp
+// Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp.
 import "google/protobuf/timestamp.proto";
 
 // Target of Go package.
@@ -23,6 +23,6 @@ message Transaction {
 
 // UserBalance
 message UserBalance {
-  // The latest balance of User.
+  // The latest balance of a User.
   float balance = 1;
 }

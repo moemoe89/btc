@@ -3,9 +3,9 @@ syntax = "proto3";
 
 // Import entity proto.
 import "proto/entity.proto";
-// Import https://github.com/bufbuild/protoc-gen-validate
+// Import https://github.com/bufbuild/protoc-gen-validate.
 import "validate/validate.proto";
-// Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp
+// Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp.
 import "google/protobuf/timestamp.proto";
 
 // Target of Go package.
