@@ -17,6 +17,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [1. Run Unit Tests](#2-run-unit-tests)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
+  - [RPC Sequence Diagram](#rpc-sequence-diagram)
 
 <!-- /code_chunk_output -->
 
@@ -32,6 +33,8 @@ BTC Service handles BTC transaction and User balance related data.
 | Application Architecture   | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
 | Directory Structure        | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
 | CI (Lint & Test)           | [GitHubActions](https://github.com/features/actions)                                                                  |
+| Visualize Code Diagram     | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
+| Sequence Diagram           | [Mermaid](https://mermaid.js.org)                                                                                     |
 
 ## Installation
 
@@ -82,10 +85,21 @@ such as relations with packages and types, here are some diagrams listed
 generated automatically using [https://github.com/ofabry/go-callvis](https://github.com/ofabry/go-callvis)
 
 <!-- start diagram doc -->
-1. [main diagram](docs/diagrams/main.png)
-2. [di diagram](docs/diagrams/di.png)
-3. [handler diagram](docs/diagrams/handler.png)
-4. [usecases diagram](docs/diagrams/usecases.png)
-5. [datastore diagram](docs/diagrams/datastore.png)
+
 
 <!-- end diagram doc -->
+
+## RPC Sequence Diagram
+
+To help give a better understanding about reading the RPC flow
+such as relations with usecases and repositories, here are some sequence diagrams (generated automatically) listed in Markdown file and written in Mermaid JS [https://mermaid-js.github.io/mermaid/](https://mermaid-js.github.io/mermaid/) format.
+
+To generate the RPC sequence diagram, there's a Makefile command that can be use:
+
+1. Run this command to generate specific RPC `make sequence-diagram RPC=GetData`.
+2. For generates multiple RPC's, just adding the other RPC by comma `make sequence-diagram RPC=GetData,GetList`.
+3. For generates all RPC's, use wildcard * in the parameter `make sequence-diagram RPC=*`.
+
+<!-- start rpc sequence diagram doc -->
+
+<!-- end rpc sequence diagram doc -->

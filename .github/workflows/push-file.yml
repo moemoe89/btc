@@ -9,20 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          mkdir -p api
-          mkdir -p docs
       - name: Download generated proto
         uses: actions/download-artifact@v3
         with:
           name: generated-proto
           path: api
-      - name: Download generated diagram
+      - name: Download generated diagrams
         uses: actions/download-artifact@v3
         with:
           name: generated-diagram
           path: docs
-      - name: Download read diagram
+      - name: Download readme diagram
         uses: actions/download-artifact@v3
         with:
           name: readme-diagram
@@ -30,7 +27,7 @@ jobs:
       - name: Download readme
         uses: actions/download-artifact@v3
         with:
-          name: readme
+          name: readme-from-diagram
           path: .
       - name: Commit files
         run: |

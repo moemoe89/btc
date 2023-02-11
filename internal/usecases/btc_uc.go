@@ -15,7 +15,7 @@ import (
 type BTCUsecase interface {
 	// CreateTransaction creates a new record for BTC transaction.
 	// Only single transaction will create by this RPC for a specific User.
-	CreateTransaction(ctx context.Context, params repository.CreateTransactionParams) (*rpc.Transaction, error)
+	CreateTransaction(ctx context.Context, params *repository.CreateTransactionParams) (*rpc.Transaction, error)
 	// ListTransaction get the list of records for BTC transaction.
 	// The record can be filtered by specific User.
 	ListTransaction(ctx context.Context, userID int64) (*rpc.ListTransactionResponse, error)

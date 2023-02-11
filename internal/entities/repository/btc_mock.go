@@ -36,7 +36,7 @@ func (m *GoMockBTCRepo) EXPECT() *GoMockBTCRepoMockRecorder {
 }
 
 // CreateTransaction mocks base method.
-func (m *GoMockBTCRepo) CreateTransaction(ctx context.Context, params CreateTransactionParams) (*grpc.Transaction, error) {
+func (m *GoMockBTCRepo) CreateTransaction(ctx context.Context, params *CreateTransactionParams) (*grpc.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTransaction", ctx, params)
 	ret0, _ := ret[0].(*grpc.Transaction)
