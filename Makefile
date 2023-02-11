@@ -2,6 +2,8 @@ GOPATH=$(shell go env GOPATH)
 
 GOLANGCI_LINT_VERSION=v1.51.1
 
+install: install-gomock install-linter
+
 install-gomock:
 	@echo "\n>>> Install gomock\n"
 	go install github.com/golang/mock/mockgen
