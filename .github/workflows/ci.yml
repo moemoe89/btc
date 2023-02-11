@@ -15,3 +15,13 @@ jobs:
       - lint
       - test
     uses: './.github/workflows/generate-proto.yml'
+  generate-diagram:
+    needs:
+      - lint
+      - test
+    uses: './.github/workflows/generate-diagram.yml'
+  push-file:
+    needs:
+      - generate-proto
+      - generate-diagram
+    uses: './.github/workflows/push-file.yml'
