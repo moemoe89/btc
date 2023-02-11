@@ -85,7 +85,11 @@ such as relations with packages and types, here are some diagrams listed
 generated automatically using [https://github.com/ofabry/go-callvis](https://github.com/ofabry/go-callvis)
 
 <!-- start diagram doc -->
-
+1. [main diagram](docs/diagrams/main.png)
+2. [di diagram](docs/diagrams/di.png)
+3. [handler diagram](docs/diagrams/handler.png)
+4. [usecases diagram](docs/diagrams/usecases.png)
+5. [datastore diagram](docs/diagrams/datastore.png)
 
 <!-- end diagram doc -->
 
@@ -101,5 +105,10 @@ To generate the RPC sequence diagram, there's a Makefile command that can be use
 3. For generates all RPC's, use wildcard * in the parameter `make sequence-diagram RPC=*`.
 
 <!-- start rpc sequence diagram doc -->
+1. [Check RPC - Sequence Diagram](docs/sequence-diagrams/rpc/check.md)
+2. [CreateTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/create-transaction.md)
+3. [GetUserBalance RPC - Sequence Diagram](docs/sequence-diagrams/rpc/get-user-balance.md)
+4. [ListTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/list-transaction.md)
+5. [Watch RPC - Sequence Diagram](docs/sequence-diagrams/rpc/watch.md)
 
 <!-- end rpc sequence diagram doc -->
