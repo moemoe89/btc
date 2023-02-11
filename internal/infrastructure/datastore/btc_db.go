@@ -21,7 +21,7 @@ func NewBTCRepo(base *BaseRepo) repository.BTCRepo {
 
 // CreateTransaction creates a new record for BTC transaction.
 // Only single transaction will create by this RPC for a specific User.
-func (r *btcRepo) CreateTransaction(ctx context.Context, params repository.CreateTransactionParams) (*rpc.Transaction, error) {
+func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.CreateTransactionParams) (*rpc.Transaction, error) {
 	return nil, errors.New("unimplemented")
 }
 

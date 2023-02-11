@@ -33,3 +33,6 @@ test:
 
 diagram:
 	go run ./scripts/generate-diagram
+
+sequence-diagram:
+	go run ./scripts/generate-rpc-sequence-diagram -RPC=$(RPC)
