@@ -82,5 +82,10 @@ such as relations with packages and types, here are some diagrams listed
 generated automatically using [https://github.com/ofabry/go-callvis](https://github.com/ofabry/go-callvis)
 
 <!-- start diagram doc -->
+1. [main diagram](docs/diagrams/main.png)
+2. [di diagram](docs/diagrams/di.png)
+3. [handler diagram](docs/diagrams/handler.png)
+4. [usecases diagram](docs/diagrams/usecases.png)
+5. [datastore diagram](docs/diagrams/datastore.png)
 
 <!-- end diagram doc -->

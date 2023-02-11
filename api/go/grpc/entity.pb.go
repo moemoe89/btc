@@ -97,7 +97,7 @@ type UserBalance struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The latest balance of User.
+	// The latest balance of a User.
 	Balance float32 `protobuf:"fixed32,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
