@@ -126,10 +126,8 @@ To generate the RPC sequence diagram, there's a Makefile command that can be use
 3. For generates all RPC's, use wildcard * in the parameter `make sequence-diagram RPC=*`.
 
 <!-- start rpc sequence diagram doc -->
-1. [Check RPC - Sequence Diagram](docs/sequence-diagrams/rpc/check.md)
-2. [CreateTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/create-transaction.md)
-3. [GetUserBalance RPC - Sequence Diagram](docs/sequence-diagrams/rpc/get-user-balance.md)
-4. [ListTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/list-transaction.md)
-5. [Watch RPC - Sequence Diagram](docs/sequence-diagrams/rpc/watch.md)
+1. [CreateTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/create-transaction.md)
+2. [GetUserBalance RPC - Sequence Diagram](docs/sequence-diagrams/rpc/get-user-balance.md)
+3. [ListTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/list-transaction.md)
 
 <!-- end rpc sequence diagram doc -->
