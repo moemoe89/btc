@@ -79,10 +79,10 @@ func (m *CreateTransactionRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetAmount() <= 0 {
+	if val := m.GetAmount(); val > -0.1 && val < 0.1 {
 		err := CreateTransactionRequestValidationError{
 			field:  "Amount",
-			reason: "value must be greater than 0",
+			reason: "value must be outside range (-0.1, 0.1)",
 		}
 		if !all {
 			return err
