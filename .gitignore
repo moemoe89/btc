@@ -4,3 +4,9 @@
 # binary
 main
 btc
+
+# timescaledb data
+development/timescaledb
+
+# vendor
+vendor/

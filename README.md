@@ -23,18 +23,21 @@ BTC Service handles BTC transaction and User balance related data.
 
 ## Project Summary
 
-| Item                       | Description                                                                                                           |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Golang Version             | [1.19](https://golang.org/doc/go1.19)                                                                                 |
-| moq                        | [mockgen](https://github.com/golang/mock)                                                                             |
-| Linter                     | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
-| Testing                    | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
-| API                        | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                      |
-| Application Architecture   | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
-| Directory Structure        | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
-| CI (Lint & Test)           | [GitHubActions](https://github.com/features/actions)                                                                  |
-| Visualize Code Diagram     | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
-| Sequence Diagram           | [Mermaid](https://mermaid.js.org)                                                                                     |
+| Item                     | Description                                                                                                           |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                                 |
+| Database                 | [timescale](https://www.timescale.com)                                                                                |
+| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
+| moq                      | [mockgen](https://github.com/golang/mock)                                                                             |
+| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
+| Testing                  | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
+| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                      |
+| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
+| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
+| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                  |
+| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
+| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                     |
+| Protobuf Operations      | [buf](https://buf.build)                                                                                              |
 
 ## Installation
 
@@ -65,15 +68,33 @@ $ make install
 You can simply execute the following command to run all test cases in this service:
 
 ```sh
-make test
+$ make test
 ```
 
-### 1. Run Linter
+### 2. Run Linter
 
 Check the Go and Proto code style using lint can be done with this command:
 
 ```sh
-make lint
+$ make lint
+```
+
+### 3. Run TimescaleDB + GUI
+
+Run TimescaleDB locally with the GUI (pgAdmin) can be executed with the following docker-compose command:
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin
+```
+
+If you don't have a docker-compose installed, please refer to this page https://docs.docker.com/compose/
+
+### 4. Run Migration
+
+The service needs some tables and dummy data in order to testing the application, please run this command to do the migraton:
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up migration
 ```
 
 # Documentation
