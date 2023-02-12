@@ -42,7 +42,12 @@ func (h *btcHandler) CreateTransaction(ctx context.Context, req *rpc.CreateTrans
 // ListTransaction get the list of records for BTC transaction.
 // The record can be filtered by specific User.
 func (h *btcHandler) ListTransaction(ctx context.Context, req *rpc.ListTransactionRequest) (*rpc.ListTransactionResponse, error) {
-	return h.uc.ListTransaction(ctx, req.GetUserId())
+	transactions, err := h.uc.ListTransaction(ctx, req.GetUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &rpc.ListTransactionResponse{Transactions: transactions}, nil
 }
 
 // GetUserBalance get the latest balance for a specific User.

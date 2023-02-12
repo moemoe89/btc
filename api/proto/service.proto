@@ -29,8 +29,8 @@ message CreateTransactionRequest {
   int64 user_id = 1 [(validate.rules).int64.gte = 1];
   // (Required) The date and time of the created transaction.
   google.protobuf.Timestamp datetime = 2 [(validate.rules).timestamp.required = true];
-  // (Required) The amount of the transaction, should greater than 0.
-  float amount = 3 [(validate.rules).float = {gt: 0}];
+  // (Required) The amount of the transaction, should be not 0.
+  float amount = 3 [(validate.rules).float = {gte: 0.1, lte: -0.1}];
 }
 
 // ListTransactionRequest
