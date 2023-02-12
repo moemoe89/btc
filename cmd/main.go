@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,18 +10,13 @@ import (
 )
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", os.Getenv("SERVER_PORT")))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
 	server := di.GetBTCGRPCServer()
 
 	log.Println("BTC service is ready")
 
 	go func() {
 		// Run() keeps its process until receiving any error
-		if err := server.Serve(lis); err != nil {
+		if err := server.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()

@@ -6,6 +6,7 @@ import (
 	rpc "github.com/moemoe89/btc/api/go/grpc"
 	"github.com/moemoe89/btc/internal/entities/repository"
 	"github.com/moemoe89/btc/internal/usecases"
+	"github.com/moemoe89/btc/pkg/grpchealth"
 
 	health "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -26,6 +27,7 @@ func NewBTCHandler(uc usecases.BTCUsecase) BTCServiceServer {
 // btcHandler is a struct for handler.
 type btcHandler struct {
 	rpc.UnimplementedBTCServiceServer
+	grpchealth.HealthChecker
 	uc usecases.BTCUsecase
 }
 
