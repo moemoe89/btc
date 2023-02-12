@@ -34,7 +34,7 @@ type CreateTransactionRequest struct {
 	UserId int64 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// (Required) The date and time of the created transaction.
 	Datetime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=datetime,proto3" json:"datetime,omitempty"`
-	// (Required) The amount of the transaction, should be not 0.
+	// (Required) The amount of the transaction, should not be 0.
 	Amount float32 `protobuf:"fixed32,3,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
