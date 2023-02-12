@@ -67,10 +67,10 @@ func (mr *GoMockBTCUsecaseMockRecorder) GetUserBalance(ctx, userID interface{}) 
 }
 
 // ListTransaction mocks base method.
-func (m *GoMockBTCUsecase) ListTransaction(ctx context.Context, userID int64) (*grpc.ListTransactionResponse, error) {
+func (m *GoMockBTCUsecase) ListTransaction(ctx context.Context, userID int64) ([]*grpc.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTransaction", ctx, userID)
-	ret0, _ := ret[0].(*grpc.ListTransactionResponse)
+	ret0, _ := ret[0].([]*grpc.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
