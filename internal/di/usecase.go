@@ -7,5 +7,6 @@ func GetBTCUsecase() usecases.BTCUsecase {
 	return usecases.NewBTCUsecase(
 		GetBTCRepo(),
 		GetTracer().Tracer(),
+		GetLogger(),
 	)
 }

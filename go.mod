@@ -14,6 +14,7 @@ require (
 	go.opentelemetry.io/otel/exporters/jaeger v1.13.0
 	go.opentelemetry.io/otel/sdk v1.13.0
 	go.opentelemetry.io/otel/trace v1.13.0
+	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.53.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
 	google.golang.org/protobuf v1.28.1
@@ -49,6 +50,8 @@ require (
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/yoheimuta/go-protoparser/v4 v4.7.0 // indirect
 	go.opentelemetry.io/otel/metric v0.36.0 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
