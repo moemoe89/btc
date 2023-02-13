@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	dbOnce sync.Once
+	poolOnce sync.Once
 )
 
 var (
@@ -55,7 +55,7 @@ func getConnString() string {
 
 // GetDatabase returns postgresql Pool.
 func GetDatabase() *pgxpool.Pool {
-	dbOnce.Do(func() {
+	poolOnce.Do(func() {
 		ctx := context.Background()
 
 		var err error
