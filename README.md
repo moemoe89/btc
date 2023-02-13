@@ -22,7 +22,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [6. Linter](#6-linter)
     - [7. Run the service](#7-run-the-service)
     - [8. Test the service](#8-test-the-service)
-    - [9. Loading Testing](#9-load-testing)
+    - [9. Load Testing](#9-load-testing)
 - [Instrumentation](#instrumentation)
   - [OpenTelemetry](#opentelemetry)
 - [Documentation](#documentation)
@@ -33,23 +33,24 @@ BTC Service handles BTC transaction and User balance related data.
 
 ## Project Summary
 
-| Item                     | Description                                                                                                          |
-|--------------------------|----------------------------------------------------------------------------------------------------------------------|
-| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                                |
-| Database                 | [timescale](https://www.timescale.com)                                                                               |
-| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                 |
-| moq                      | [mockgen](https://github.com/golang/mock)                                                                            |
-| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                           |
+| Item                     | Description                                                                                                           |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                                 |
+| Database                 | [timescale](https://www.timescale.com)                                                                                |
+| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
+| moq                      | [mockgen](https://github.com/golang/mock)                                                                             |
+| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
 | Testing                  | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
-| Load Testing             | [ghz](https://ghz.sh)                                                                                                |
-| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                     |
-| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                   |
-| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                     |
-| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                 |
-| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                   |
-| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                    |
-| Protobuf Operations      | [buf](https://buf.build)                                                                                             |
-| Instrumentation          | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                 |
+| Load Testing             | [ghz](https://ghz.sh)                                                                                                 |
+| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                      |
+| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
+| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
+| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                  |
+| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
+| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                     |
+| Protobuf Operations      | [buf](https://buf.build)                                                                                              |
+| Instrumentation          | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
+| Logger                   | [zap](https://github.com/uber-go/zap)                                                                                 |
 
 ## Installation
 

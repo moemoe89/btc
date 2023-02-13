@@ -8,6 +8,7 @@ import (
 
 	rpc "github.com/moemoe89/btc/api/go/grpc"
 	"github.com/moemoe89/btc/internal/entities/repository"
+	"github.com/moemoe89/btc/pkg/logging"
 	"github.com/moemoe89/btc/pkg/trace"
 )
 
@@ -30,10 +31,12 @@ var _ BTCUsecase = (*btcUsecase)(nil)
 func NewBTCUsecase(
 	btcRepo repository.BTCRepo,
 	trace trace.Tracer,
+	logger logging.Logger,
 ) BTCUsecase {
 	return &btcUsecase{
 		btcRepo: btcRepo,
 		trace:   trace,
+		logger:  logger,
 	}
 }
 
@@ -41,4 +44,5 @@ func NewBTCUsecase(
 type btcUsecase struct {
 	btcRepo repository.BTCRepo
 	trace   trace.Tracer
+	logger  logging.Logger
 }

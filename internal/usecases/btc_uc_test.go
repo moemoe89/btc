@@ -14,5 +14,6 @@ func sut(f fields) usecases.BTCUsecase {
 	return usecases.NewBTCUsecase(
 		f.btcRepo,
 		di.GetTracer().Tracer(),
+		di.GetLogger(),
 	)
 }
