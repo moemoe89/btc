@@ -17,11 +17,14 @@ BTC Service handles BTC transaction and User balance related data.
     - [1. API](#1-api)
     - [2. TimescaleDB + GUI](#2-timescaledb--gui)
     - [3. Migration](#3-migration)
-    - [4. Unit Test](#4-unit-test)
-    - [5. Linter](#5-linter)
-    - [6. Run the service](#6-run-the-service)
-    - [7. Test the service](#7-test-the-service)
-    - [8. Loading Testing](#8-load-testing)
+    - [4. Instrumentation](#4-instrumentation)
+    - [5. Unit Test](#5-unit-test)
+    - [6. Linter](#6-linter)
+    - [7. Run the service](#7-run-the-service)
+    - [8. Test the service](#8-test-the-service)
+    - [9. Loading Testing](#9-load-testing)
+- [Instrumentation](#instrumentation)
+  - [OpenTelemetry](#opentelemetry)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
@@ -30,22 +33,23 @@ BTC Service handles BTC transaction and User balance related data.
 
 ## Project Summary
 
-| Item                     | Description                                                                                                         |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------|
-| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                               |
-| Database                 | [timescale](https://www.timescale.com)                                                                              |
-| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                |
-| moq                      | [mockgen](https://github.com/golang/mock)                                                                           |
-| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                          |
+| Item                     | Description                                                                                                          |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------|
+| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                                |
+| Database                 | [timescale](https://www.timescale.com)                                                                               |
+| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                 |
+| moq                      | [mockgen](https://github.com/golang/mock)                                                                            |
+| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                           |
 | Testing                  | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
-| Load Testing             | [ghz](https://ghz.sh)                                                 |
-| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                    |
-| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                  |
-| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                    |
-| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                |
-| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                  |
-| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                   |
-| Protobuf Operations      | [buf](https://buf.build)                                                                                            |
+| Load Testing             | [ghz](https://ghz.sh)                                                                                                |
+| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                     |
+| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                   |
+| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                     |
+| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                 |
+| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                   |
+| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                    |
+| Protobuf Operations      | [buf](https://buf.build)                                                                                             |
+| Instrumentation          | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                 |
 
 ## Installation
 
@@ -128,7 +132,18 @@ Make sure the database already running, after that we need some tables and dummy
 $ docker-compose -f ./development/docker-compose.yml up migration
 ```
 
-### 4. Unit Test
+### 4. Instrumentation
+
+This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
+The data exported to Jaeger and can be seen in the Jaeger UI [http://localhost:16686](http://localhost:16686)
+
+For running the Jaeger exporter, easily run with docker-compose command:
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up jaeger
+```
+
+### 5. Unit Test
 
 Make sure the database already running, then you can simply execute the following command to run all test cases in this service:
 
@@ -136,7 +151,7 @@ Make sure the database already running, then you can simply execute the followin
 $ make test
 ```
 
-### 5. Linter
+### 6. Linter
 
 For running the linter make sure these libs already installed in your system:
 
@@ -149,7 +164,7 @@ Then checks the Go and Proto code style using lint can be done with this command
 $ make lint
 ```
 
-### 6. Run the service
+### 7. Run the service
 
 For running the service, you need the database running and set up some env variables:
 
@@ -161,6 +176,7 @@ export POSTGRES_PASSWORD=test
 export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
 export POSTGRES_DB=test
+export OTEL_AGENT=http://localhost:14268/api/traces
 ```
 
 Or you can just execute the sh file:
@@ -169,7 +185,7 @@ Or you can just execute the sh file:
 $ ./scripts/run.sh
 ```
 
-### 7. Test the service
+### 8. Test the service
 
 The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
 
@@ -184,7 +200,7 @@ Basically you just need to import the [api/proto/service.proto](api/proto/servic
 > It is caused by some path and the usage of `protoc-gen-validate` library.
 > To solve this issue, there's need a modification for the proto file.
 
-### BloomRPC
+#### BloomRPC
 
 blooRPC will have this issue when trying to import the proto file
 
@@ -205,7 +221,7 @@ To this:
 import "../proto/entity.proto";
 ```
 
-### Postman
+#### Postman
 
 There's some issue when importing to Postman. Basically we need to do the same things like BloomRPC and disable the validate import.
 
@@ -223,7 +239,7 @@ import "../proto/entity.proto";
 
 Also don't forget to set the import path e.g. `{YOUR-DIR}/btc/api/proto`
 
-## 8. Load Testing
+## 9. Load Testing
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 

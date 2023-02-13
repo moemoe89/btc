@@ -35,7 +35,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
-  # btc-migration
+  # migration
   migration:
     image: migrate/migrate:v4.15.2
     volumes:
@@ -43,3 +43,9 @@ services:
     command: [ "-path", "/migrations", "-database", "postgres://test:test@timescaledb:5432/test?sslmode=disable", "up"]
     depends_on:
       - timescaledb
+  # jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:1.42.0
+    ports:
+      - "14268:14268"   # jaeger-collector HTTP server (tracer provider)
+      - "16686:16686"   # HTTP server (browser UI)
