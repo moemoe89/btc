@@ -57,7 +57,7 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 		}
 	}()
 
-	query := `INSERT INTO transactions (time, user_id, amount) VALUES ($1, $2, $3)`
+	query := `INSERT INTO transactions (datetime, user_id, amount) VALUES ($1, $2, $3)`
 
 	_, err = tx.Exec(ctx, query, params.Datetime, params.UserID, params.Amount)
 	if err != nil {
@@ -85,19 +85,19 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 
 // ListTransaction get the list of records for BTC transaction.
 // The record can be filtered by specific User.
-func (r *btcRepo) ListTransaction(ctx context.Context, userID int64) ([]*rpc.Transaction, error) {
-	query := `SELECT time, user_id, amount FROM transactions WHERE user_id = $1`
+func (r *btcRepo) ListTransaction(ctx context.Context, params *repository.ListTransactionParams) ([]*rpc.Transaction, error) {
+	query := `SELECT datetime, user_id, amount FROM transactions WHERE user_id = $1 AND datetime >= $2::timestamptz AND datetime <= $3::timestamptz`
 
-	rows, err := r.db.Query(ctx, query, userID)
+	rows, err := r.db.Query(ctx, query, params.UserID, params.StartDatetime, params.EndDatetime)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	type data struct {
-		Time   time.Time
-		UserID int64
-		Amount float32
+		Datetime time.Time
+		UserID   int64
+		Amount   float32
 	}
 
 	var transactions []*rpc.Transaction
@@ -105,14 +105,14 @@ func (r *btcRepo) ListTransaction(ctx context.Context, userID int64) ([]*rpc.Tra
 	for rows.Next() {
 		var d data
 
-		err = rows.Scan(&d.Time, &d.UserID, &d.Amount)
+		err = rows.Scan(&d.Datetime, &d.UserID, &d.Amount)
 		if err != nil {
 			return nil, err
 		}
 
 		transactions = append(transactions, &rpc.Transaction{
 			UserId:   d.UserID,
-			Datetime: timestamppb.New(d.Time),
+			Datetime: timestamppb.New(d.Datetime),
 			Amount:   d.Amount,
 		})
 	}

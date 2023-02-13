@@ -32,7 +32,13 @@ test:
 	go tool cover -html=.coverage/internal.coverage -o .coverage/html/internal.coverage.html;
 
 diagram:
+	@echo "\n>>> Run Generate Diagram\n"
 	go run ./scripts/generate-diagram
 
 sequence-diagram:
+	@echo "\n>>> Run Generate RPC Sequence Diagram\n"
 	go run ./scripts/generate-rpc-sequence-diagram -RPC=$(RPC)
+
+protoc:
+	@echo "\n>>> Run Generate Protoc\n"
+	buf generate

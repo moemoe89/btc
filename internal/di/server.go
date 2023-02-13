@@ -5,6 +5,7 @@ import (
 	"os"
 
 	rpc "github.com/moemoe89/btc/api/go/grpc"
+	"github.com/moemoe89/btc/pkg/di"
 	"github.com/moemoe89/btc/pkg/server"
 
 	"google.golang.org/grpc"
@@ -21,6 +22,8 @@ func GetBTCGRPCServer() server.Server {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	di.RegisterCloser("gRPC server", di.NewCloser(s.GracefulStop))
 
 	return s
 }

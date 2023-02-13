@@ -13,8 +13,13 @@ BTC Service handles BTC transaction and User balance related data.
 - [Installation](#installation)
     - [1. Set Up Golang Development Environment](#1-set-up-golang-development-environment)
     - [2. Install Development Utility Tools](#2-install-development-utility-tools)
-- [Running Unit Tests Locally](#running-unit-tests-locally)
-    - [1. Run Unit Tests](#2-run-unit-tests)
+- [Development workflow and guidelines](#development-workflow-and-guidelines)
+    - [1. API](#1-api)
+    - [2. TimescaleDB + GUI](#2-timescaledb--gui)
+    - [3. Migration](#3-migration)
+    - [4. Unit Test](#4-unit-test)
+    - [5. Linter](#5-linter)
+    - [6. Run the service](#6-run-the-service)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
@@ -63,23 +68,31 @@ $ make install
 
 ## Development workflow and guidelines
 
-### 1. Run Unit Tests
+### 1. API
 
-You can simply execute the following command to run all test cases in this service:
+This project using gRPC and Protocol Buffers, thus all needed data like Service definition, RPC's list, Entities will store in [api/proto](api/proto) directory.
+
+If you unfamiliar with Protocol Buffer, please visit this link for the detail:
+
+* https://protobuf.dev
+
+For generating the Proto files, make sure to have these libs installed on your system, please refer to this link:
+
+* https://buf.build/
+* https://grpc.io/docs/protoc-installation
+* https://grpc.io/docs/languages/go/quickstart/
+
+The validation for this API using `protoc-gen-validate`, for the detail please refer to this lib:
+
+* https://github.com/bufbuild/protoc-gen-validate
+
+Then, generating the Protobuf files can be done my this command:
 
 ```sh
-$ make test
+$ make protoc
 ```
 
-### 2. Run Linter
-
-Check the Go and Proto code style using lint can be done with this command:
-
-```sh
-$ make lint
-```
-
-### 3. Run TimescaleDB + GUI
+### 2. TimescaleDB + GUI
 
 Run TimescaleDB locally with the GUI (pgAdmin) can be executed with the following docker-compose command:
 
@@ -87,14 +100,59 @@ Run TimescaleDB locally with the GUI (pgAdmin) can be executed with the followin
 $ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin
 ```
 
+> NOTE:
+> TimescaleDB will use port 5432 and pgAdmin will use 5050, please make sure those port are unused in yur system.
+> If the port conflicted, you can change the port on the [development/docker-compose.yml](docker-compose.yml) file.
+
 If you don't have a docker-compose installed, please refer to this page https://docs.docker.com/compose/
 
-### 4. Run Migration
+### 3. Migration
 
-The service needs some tables and dummy data in order to testing the application, please run this command to do the migraton:
+Make sure the database already running, after that we need some tables and dummy data in order to test the application, please run this command to do the migration:
 
 ```sh
 $ docker-compose -f ./development/docker-compose.yml up migration
+```
+
+### 4. Unit Test
+
+Make sure the database already running, then you can simply execute the following command to run all test cases in this service:
+
+```sh
+$ make test
+```
+
+### 5. Linter
+
+For running the linter make sure these libs already installed in your system:
+
+* https://github.com/golangci/golangci-lint
+* https://github.com/yoheimuta/protolint
+
+Then checks the Go and Proto code style using lint can be done with this command:
+
+```sh
+$ make lint
+```
+
+### 6. Run the service
+
+For running the service, you need the database running and set up some env variables:
+
+```
+export APP_ENV=dev
+export SERVER_PORT=8080
+export POSTGRES_USER=test
+export POSTGRES_PASSWORD=test
+export POSTGRES_HOST=localhost
+export POSTGRES_PORT=5432
+export POSTGRES_DB=test
+```
+
+Or you can just execute the sh file:
+
+```sh
+$ ./scripts/run.sh
 ```
 
 # Documentation

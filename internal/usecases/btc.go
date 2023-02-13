@@ -15,8 +15,8 @@ func (u *btcUsecase) CreateTransaction(ctx context.Context, params *repository.C
 
 // ListTransaction get the list of records for BTC transaction.
 // The record can be filtered by specific User.
-func (u *btcUsecase) ListTransaction(ctx context.Context, userID int64) ([]*rpc.Transaction, error) {
-	return u.btcRepo.ListTransaction(ctx, userID)
+func (u *btcUsecase) ListTransaction(ctx context.Context, params *repository.ListTransactionParams) ([]*rpc.Transaction, error) {
+	return u.btcRepo.ListTransaction(ctx, params)
 }
 
 // GetUserBalance get the latest balance for a specific User.

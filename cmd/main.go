@@ -6,11 +6,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/moemoe89/btc/internal/di"
+	iDI "github.com/moemoe89/btc/internal/di"
+	"github.com/moemoe89/btc/pkg/di"
 )
 
 func main() {
-	server := di.GetBTCGRPCServer()
+	server := iDI.GetBTCGRPCServer()
 
 	log.Println("BTC service is ready")
 
@@ -25,7 +26,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	log.Printf("SIGNAL %d received, shutting down gracefully...", <-quit)
-	server.GracefulStop()
+	di.CloseAll()
 
 	log.Println("finished graceful shut down")
 }
