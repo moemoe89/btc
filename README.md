@@ -20,6 +20,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [4. Unit Test](#4-unit-test)
     - [5. Linter](#5-linter)
     - [6. Run the service](#6-run-the-service)
+    - [7. Test the service](#7-test-the-service)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
@@ -104,6 +105,8 @@ $ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin
 > TimescaleDB will use port 5432 and pgAdmin will use 5050, please make sure those port are unused in yur system.
 > If the port conflicted, you can change the port on the [development/docker-compose.yml](docker-compose.yml) file.
 
+The default email & password for pgAdmin are `admin@admin.com` and `admin123`
+
 If you don't have a docker-compose installed, please refer to this page https://docs.docker.com/compose/
 
 ### 3. Migration
@@ -154,6 +157,60 @@ Or you can just execute the sh file:
 ```sh
 $ ./scripts/run.sh
 ```
+
+### 7. Test the service
+
+The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
+
+If you want to test by GUI client, you can use either BloomRPC (although already no longer active) or Postman.
+For the detail please visit these links:
+* https://github.com/bloomrpc/bloomrpc
+* https://www.postman.com
+
+Basically you just need to import the [api/proto/service.proto](api/proto/service.proto) file if you want to test via bloomRPC / Postman.
+
+> NOTE: There will be a possibility issue when importing the proto file to bloomRPC or Postman.
+> It is caused by some path and the usage of `protoc-gen-validate` library.
+> To solve this issue, there's need a modification for the proto file.
+
+### bloomRPC
+
+blooRPC will have this issue when trying to import the proto file
+
+```
+Error while importing protos
+no such type: e.Transaction
+```
+
+To fix this issue, fix the import path from:
+
+```protobuf
+import "proto/entity.proto";
+```
+
+To this:
+
+```protobuf
+import "../proto/entity.proto";
+```
+
+### Postman
+
+There's some issue when importing to Postman. Basically we need to do the same things like bloomRPC and disable the validate import.
+
+```protobuf
+import "proto/entity.proto";
+import "validate/validate.proto";
+```
+
+To this:
+
+```protobuf
+import "../proto/entity.proto";
+// import "validate/validate.proto";
+```
+
+Also don't forget to set the import path e.g. {YOUR-DIR}/btc/api/proto
 
 # Documentation
 
