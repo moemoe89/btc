@@ -12,4 +12,4 @@
 2. Run this command `go run ./scripts/generate-diagram`.
 3. Check the [docs/diagrams](../../docs/diagrams) from the root directory.
 
-<!-- version:1ac61e9022ad2543b390545d0887638210e73edb: -->
+<!-- version:7f37bd81a438353029681a07f6ce11d3c8ba8de0: -->
