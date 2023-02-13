@@ -1,0 +1,280 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "BTC Service",
+    "version": "0.1"
+  },
+  "tags": [
+    {
+      "name": "BTCService"
+    }
+  ],
+  "host": "localhost:8081",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/transaction": {
+      "get": {
+        "summary": "ListTransaction get the list of records for BTC transaction.\nThe record can be filtered by specific User.",
+        "operationId": "BTCService_ListTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListTransactionResponse"
+            }
+          },
+          "400": {
+            "description": "Returned when the request parameters are invalid.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request lacks valid authentication credentials.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Returned when the server encountered an unexpected condition that prevented it from fulfilling the request.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "(Required) The ID of User.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "startDatetime",
+            "description": "(Required) The start date and time filter of the transactions.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "endDatetime",
+            "description": "(Required) The end date and time filter of the transactions.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "BTCService"
+        ]
+      },
+      "post": {
+        "summary": "CreateTransaction creates a new record for BTC transaction.\nOnly single transaction will create by this RPC for a specific User.",
+        "operationId": "BTCService_CreateTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eTransaction"
+            }
+          },
+          "400": {
+            "description": "Returned when the request parameters are invalid.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request lacks valid authentication credentials.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Returned when the server encountered an unexpected condition that prevented it from fulfilling the request.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateTransactionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "BTCService"
+        ]
+      }
+    },
+    "/v1/user/balance": {
+      "get": {
+        "summary": "GetUserBalance get the latest balance for a specific User.",
+        "operationId": "BTCService_GetUserBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eUserBalance"
+            }
+          },
+          "400": {
+            "description": "Returned when the request parameters are invalid.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request lacks valid authentication credentials.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Returned when the server encountered an unexpected condition that prevented it from fulfilling the request.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "(Required) The ID of User.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BTCService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CreateTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64",
+          "description": "(Required) The ID of User."
+        },
+        "datetime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "(Required) The date and time of the created transaction."
+        },
+        "amount": {
+          "type": "number",
+          "format": "float",
+          "description": "(Required) The amount of the transaction, should not be 0."
+        }
+      },
+      "title": "CreateTransactionRequest"
+    },
+    "ListTransactionResponse": {
+      "type": "object",
+      "properties": {
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/eTransaction"
+          },
+          "description": "The list of Transactions."
+        }
+      },
+      "title": "ListTransactionResponse"
+    },
+    "eTransaction": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64",
+          "description": "The ID of User."
+        },
+        "datetime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time of the created transaction."
+        },
+        "amount": {
+          "type": "number",
+          "format": "float",
+          "description": "The amount of the transaction, should greater than 0."
+        }
+      },
+      "title": "Transaction"
+    },
+    "eUserBalance": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "number",
+          "format": "float",
+          "description": "The latest balance of a User."
+        }
+      },
+      "title": "UserBalance"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

@@ -7,20 +7,71 @@ import "proto/entity.proto";
 import "validate/validate.proto";
 // Import https://protobuf.dev/reference/protobuf/google.protobuf/#timestamp.
 import "google/protobuf/timestamp.proto";
+// Import https://github.com/googleapis/googleapis/blob/master/google/api/annotations.proto.
+import "google/api/annotations.proto";
+// Import https://github.com/grpc-ecosystem/grpc-gateway/blob/main/protoc-gen-openapiv2/options/annotations.proto.
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 // Target of Go package.
 option go_package = "github.com/moemoe89/btc/api/go/grpc";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "BTC Service";
+    version: "0.1";
+  };
+  host: "localhost:8081";
+  schemes: HTTP;
+  consumes: "application/json";
+  responses: {
+    key: "400";
+    value: {
+      description: "Returned when the request parameters are invalid.";
+    }
+  };
+  responses: {
+    key: "401";
+    value: {
+      description: "Returned when the request lacks valid authentication credentials.";
+    }
+  };
+  responses: {
+    key: "403";
+    value: {
+      description: "Returned when the user does not have permission to access the resource.";
+    }
+  };
+  responses: {
+    key: "500";
+    value: {
+      description: "Returned when the server encountered an unexpected condition that prevented it from fulfilling the request.";
+    }
+  };
+};
 
 // BTCService is a service that handles BTC data.
 service BTCService {
   // CreateTransaction creates a new record for BTC transaction.
   // Only single transaction will create by this RPC for a specific User.
-  rpc CreateTransaction(CreateTransactionRequest) returns (e.Transaction) {}
+  rpc CreateTransaction(CreateTransactionRequest) returns (e.Transaction) {
+    option (google.api.http) = {
+      post: "/v1/transaction",
+      body: "*",
+    };
+  }
   // ListTransaction get the list of records for BTC transaction.
   // The record can be filtered by specific User.
-  rpc ListTransaction(ListTransactionRequest) returns (ListTransactionResponse) {}
+  rpc ListTransaction(ListTransactionRequest) returns (ListTransactionResponse) {
+    option (google.api.http) = {
+      get: "/v1/transaction",
+    };
+  }
   // GetUserBalance get the latest balance for a specific User.
-  rpc GetUserBalance(GetUserBalanceRequest) returns (e.UserBalance) {}
+  rpc GetUserBalance(GetUserBalanceRequest) returns (e.UserBalance) {
+    option (google.api.http) = {
+      get: "/v1/user/balance",
+    };
+  }
 }
 
 // CreateTransactionRequest

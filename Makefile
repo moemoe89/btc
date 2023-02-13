@@ -42,3 +42,4 @@ sequence-diagram:
 protoc:
 	@echo "\n>>> Run Generate Protoc\n"
 	buf generate
+	buf generate --template buf.gen-apis.yaml --path api/proto/service.proto
