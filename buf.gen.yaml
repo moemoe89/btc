@@ -1,5 +1,6 @@
 version: v1
 plugins:
+  # go
   - name: go
     out: .
     strategy: directory
@@ -14,3 +15,10 @@ plugins:
       - lang=go
       - validate_out="lang=go:./go/src/"
       - module=github.com/moemoe89/btc
+  # grpc gateway
+  - name: grpc-gateway
+    out: .
+    opt:
+      - generate_unbound_methods=true
+      - module=github.com/moemoe89/btc
+    strategy: directory
