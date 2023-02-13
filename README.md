@@ -42,7 +42,7 @@ BTC Service handles BTC transaction and User balance related data.
 | Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
 | Testing                  | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
 | Load Testing             | [ghz](https://ghz.sh)                                                                                                 |
-| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                      |
+| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
 | Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
 | Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
 | CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                  |
@@ -198,14 +198,17 @@ For the detail please visit these links:
 Basically you just need to import the [api/proto/service.proto](api/proto/service.proto) file if you want to test via BloomRPC / Postman.
 
 > NOTE: There will be a possibility issue when importing the proto file to BloomRPC or Postman.
-> It is caused by some path and the usage of `protoc-gen-validate` library.
+> It is caused by some path issue, the usage of `gRPC Gateway` and `protoc-gen-validate` library.
 > To solve this issue, there's need a modification for the proto file.
 
 #### BloomRPC
 
-blooRPC will have this issue when trying to import the proto file
+BloomRPC will have this issue when trying to import the proto file
 
 ```
+Error while importing protos
+illegal name ';' (/path/btc/api/proto/service.proto, line 20)
+
 Error while importing protos
 no such type: e.Transaction
 ```
@@ -222,6 +225,14 @@ To this:
 import "../proto/entity.proto";
 ```
 
+and remove gRPC Gateway related annotations:
+
+```protobuf
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  ...
+};
+```
+
 #### Postman
 
 There's some issue when importing to Postman. Basically we need to do the same things like BloomRPC and disable the validate import.
@@ -229,6 +240,7 @@ There's some issue when importing to Postman. Basically we need to do the same t
 ```protobuf
 import "proto/entity.proto";
 import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 ```
 
 To this:
@@ -236,11 +248,19 @@ To this:
 ```protobuf
 import "../proto/entity.proto";
 // import "validate/validate.proto";
+// import "protoc-gen-openapiv2/options/annotations.proto";
 ```
 
 Also don't forget to set the import path e.g. `{YOUR-DIR}/btc/api/proto`
 
-## 9. Load Testing
+#### gRPC-Gateway
+
+This service has HTTP server built on gRPC-Gateway, if you prefer to test using HTTP instead HTTP2 protocol,
+you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](api/openapiv2/proto/service.swagger.json) and then copy paste to this URL https://editor.swagger.io/
+
+By default HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
+
+### 9. Load Testing
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 
@@ -260,6 +280,8 @@ To fix this issue, you need to change some file in proto file:
 ```protobuf
 import "proto/entity.proto";
 import "validate/validate.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 ```
 
 To this:
@@ -267,6 +289,8 @@ To this:
 ```protobuf
 import "../proto/entity.proto";
 // import "validate/validate.proto";
+// import "google/api/annotations.proto";
+// import "protoc-gen-openapiv2/options/annotations.proto";
 ```
 
 And all validation on each field such as:
@@ -295,6 +319,14 @@ message CreateTransactionRequest {
   // (Required) The amount of the transaction, should not be 0.
   float amount = 3;
 }
+```
+
+and remove gRPC Gateway related annotations:
+
+```protobuf
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  ...
+};
 ```
 
 Then, you can run this `ghz` command to do Load Testing for specific RPC, for the example:
