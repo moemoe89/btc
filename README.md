@@ -21,6 +21,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [5. Linter](#5-linter)
     - [6. Run the service](#6-run-the-service)
     - [7. Test the service](#7-test-the-service)
+    - [8. Loading Testing](#8-load-testing)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
@@ -29,21 +30,22 @@ BTC Service handles BTC transaction and User balance related data.
 
 ## Project Summary
 
-| Item                     | Description                                                                                                           |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                                 |
-| Database                 | [timescale](https://www.timescale.com)                                                                                |
-| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
-| moq                      | [mockgen](https://github.com/golang/mock)                                                                             |
-| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
+| Item                     | Description                                                                                                         |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                               |
+| Database                 | [timescale](https://www.timescale.com)                                                                              |
+| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                |
+| moq                      | [mockgen](https://github.com/golang/mock)                                                                           |
+| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                          |
 | Testing                  | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
-| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                      |
-| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
-| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
-| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                  |
-| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
-| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                     |
-| Protobuf Operations      | [buf](https://buf.build)                                                                                              |
+| Load Testing             | [ghz](https://ghz.sh)                                                 |
+| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/)                                                                    |
+| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                  |
+| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                    |
+| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                |
+| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                  |
+| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                   |
+| Protobuf Operations      | [buf](https://buf.build)                                                                                            |
 
 ## Installation
 
@@ -105,7 +107,16 @@ $ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin
 > TimescaleDB will use port 5432 and pgAdmin will use 5050, please make sure those port are unused in yur system.
 > If the port conflicted, you can change the port on the [development/docker-compose.yml](docker-compose.yml) file.
 
-The default email & password for pgAdmin are `admin@admin.com` and `admin123`
+The default email & password for pgAdmin are:
+* email: `admin@admin.com` 
+* password: `admin123`
+
+With this following TimescaleDB info:
+* host: `timescaledb` -> change this to `localhost` if you try to connect from outside Docker
+* port: `5432`
+* username: `test`
+* password: `test`
+* db: `test`
 
 If you don't have a docker-compose installed, please refer to this page https://docs.docker.com/compose/
 
@@ -167,13 +178,13 @@ For the detail please visit these links:
 * https://github.com/bloomrpc/bloomrpc
 * https://www.postman.com
 
-Basically you just need to import the [api/proto/service.proto](api/proto/service.proto) file if you want to test via bloomRPC / Postman.
+Basically you just need to import the [api/proto/service.proto](api/proto/service.proto) file if you want to test via BloomRPC / Postman.
 
-> NOTE: There will be a possibility issue when importing the proto file to bloomRPC or Postman.
+> NOTE: There will be a possibility issue when importing the proto file to BloomRPC or Postman.
 > It is caused by some path and the usage of `protoc-gen-validate` library.
 > To solve this issue, there's need a modification for the proto file.
 
-### bloomRPC
+### BloomRPC
 
 blooRPC will have this issue when trying to import the proto file
 
@@ -196,7 +207,7 @@ import "../proto/entity.proto";
 
 ### Postman
 
-There's some issue when importing to Postman. Basically we need to do the same things like bloomRPC and disable the validate import.
+There's some issue when importing to Postman. Basically we need to do the same things like BloomRPC and disable the validate import.
 
 ```protobuf
 import "proto/entity.proto";
@@ -210,7 +221,84 @@ import "../proto/entity.proto";
 // import "validate/validate.proto";
 ```
 
-Also don't forget to set the import path e.g. {YOUR-DIR}/btc/api/proto
+Also don't forget to set the import path e.g. `{YOUR-DIR}/btc/api/proto`
+
+## 8. Load Testing
+
+In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
+
+Since the service running in gRPC, we need the tool that support to do HTTP2 request.
+In this case we can use https://ghz.sh/ because it is very simple and can generate various output report type.
+
+> NOTE: Like importing the proto file to BloomRPC / Postman,
+> when running the `ghz` there's will be issue shown due to the tool can't read the path & validate lib.
+
+Here are some possibility issues when we're trying to run the `ghz` commands:
+* `./api/proto/service.proto:5:8: open api/proto/proto/entity.proto: no such file or directory`
+* `./api/proto/service.proto:7:8: open api/proto/validate/validate.proto: no such file or directory`
+* `./api/proto/service.proto:29:22: field CreateTransactionRequest.user_id: unknown extension validate.rules`
+
+To fix this issue, you need to change some file in proto file:
+
+```protobuf
+import "proto/entity.proto";
+import "validate/validate.proto";
+```
+
+To this:
+
+```protobuf
+import "../proto/entity.proto";
+// import "validate/validate.proto";
+```
+
+And all validation on each field such as:
+
+```protobuf
+// CreateTransactionRequest
+message CreateTransactionRequest {
+  // (Required) The ID of User.
+  int64 user_id = 1 [(validate.rules).int64.gte = 1];
+  // (Required) The date and time of the created transaction.
+  google.protobuf.Timestamp datetime = 2 [(validate.rules).timestamp.required = true];
+  // (Required) The amount of the transaction, should not be 0.
+  float amount = 3 [(validate.rules).float = {gte: 0.1, lte: -0.1}];
+}
+```
+
+To this:
+
+```protobuf
+// CreateTransactionRequest
+message CreateTransactionRequest {
+  // (Required) The ID of User.
+  int64 user_id = 1;
+  // (Required) The date and time of the created transaction.
+  google.protobuf.Timestamp datetime = 2;
+  // (Required) The amount of the transaction, should not be 0.
+  float amount = 3;
+}
+```
+
+Then, you can run this `ghz` command to do Load Testing for specific RPC, for the example:
+
+### 1. CreateTransaction RPC:
+
+```sh
+ghz --insecure --proto ./api/proto/service.proto --call BTCService.CreateTransaction -d '{ "user_id": 1, "datetime": { "seconds": 1676339196, "nanos": 0 }, "amount": 100 }' 0.0.0.0:8080 -O html -o load_testing_create_transaction.html
+```
+
+### 2. ListTransaction RPC:
+
+```sh
+ghz --insecure --proto ./api/proto/service.proto --call BTCService.ListTransaction -d '{ "user_id": 1, "start_datetime": { "seconds": 1676339196, "nanos": 0 }, "end_datetime": { "seconds": 1676339196, "nanos": 0 } }' 0.0.0.0:8080 -O html -o load_testing_list_transaction.html
+```
+
+### 3. GetUserBalance RPC:
+
+```sh
+ghz --insecure --proto ./api/proto/service.proto --call BTCService.GetUserBalance -d '{ "user_id": 1 }' 0.0.0.0:8080 -O html -o load_testing_get_user_balance.html
+```
 
 # Documentation
 
