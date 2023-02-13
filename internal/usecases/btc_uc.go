@@ -8,6 +8,7 @@ import (
 
 	rpc "github.com/moemoe89/btc/api/go/grpc"
 	"github.com/moemoe89/btc/internal/entities/repository"
+	"github.com/moemoe89/btc/pkg/trace"
 )
 
 // BTCUsecase defines BTC transactions related domain functionality.
@@ -28,13 +29,16 @@ var _ BTCUsecase = (*btcUsecase)(nil)
 // NewBTCUsecase returns BTCUsecase.
 func NewBTCUsecase(
 	btcRepo repository.BTCRepo,
+	trace trace.Tracer,
 ) BTCUsecase {
 	return &btcUsecase{
 		btcRepo: btcRepo,
+		trace:   trace,
 	}
 }
 
 // btcUsecase is a struct for usecase.
 type btcUsecase struct {
 	btcRepo repository.BTCRepo
+	trace   trace.Tracer
 }

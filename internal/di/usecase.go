@@ -6,5 +6,6 @@ import "github.com/moemoe89/btc/internal/usecases"
 func GetBTCUsecase() usecases.BTCUsecase {
 	return usecases.NewBTCUsecase(
 		GetBTCRepo(),
+		GetTracer().Tracer(),
 	)
 }

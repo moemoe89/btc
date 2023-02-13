@@ -5,12 +5,20 @@ import (
 	"io"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/moemoe89/btc/pkg/di"
 	"github.com/moemoe89/btc/pkg/trace"
 
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"google.golang.org/grpc"
+	otelTrace "go.opentelemetry.io/otel/trace"
+)
+
+var (
+	traceProviderOnce sync.Once
+)
+
+var (
+	traceProvider trace.Provider
 )
 
 type wrapProvider struct {
@@ -21,28 +29,42 @@ func (w *wrapProvider) Close() error {
 	return w.provider.Close(context.Background())
 }
 
-func GetTrace() []grpc.ServerOption {
-	// Bootstrap tracer.
-	prv, err := trace.NewProvider(trace.ProviderConfig{
-		JaegerEndpoint: os.Getenv("OTEL_AGENT"),
-		ServiceName:    "BTC Server",
-		ServiceVersion: "1.0.0",
-		Environment:    os.Getenv("APP_ENV"),
-		Disabled:       false,
+func GetTracer() trace.Provider {
+	traceProviderOnce.Do(func() {
+		var err error
+
+		if os.Getenv("OTEL_AGENT") != "" {
+			traceProvider, err = trace.NewProvider(trace.ProviderConfig{
+				JaegerEndpoint: os.Getenv("OTEL_AGENT"),
+				ServiceName:    "BTC Server",
+				ServiceVersion: "1.0.0",
+				Environment:    os.Getenv("APP_ENV"),
+				Disabled:       false,
+			})
+			if err != nil {
+				log.Fatal("trace new provider", err)
+			}
+		} else {
+			traceProvider = &trace.MockProvider{
+				CloseFunc: func(ctx context.Context) error {
+					return nil
+				},
+				TracerFunc: func() trace.Tracer {
+					return &trace.MockTracer{
+						StartSpanFunc: func(ctx context.Context, name string, cus trace.SpanCustomiser) (context.Context, otelTrace.Span) {
+							return ctx, otelTrace.SpanFromContext(ctx)
+						},
+					}
+				},
+			}
+		}
+
+		var c io.Closer = &wrapProvider{
+			provider: traceProvider,
+		}
+
+		di.RegisterCloser("Trace Provider", c)
 	})
-	if err != nil {
-		log.Fatal("trace new provider", err)
-	}
 
-	opts := []grpc.ServerOption{
-		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
-	}
-
-	var c io.Closer = &wrapProvider{
-		provider: prv,
-	}
-
-	di.RegisterCloser("Trace Provider", c)
-
-	return opts
+	return traceProvider
 }
