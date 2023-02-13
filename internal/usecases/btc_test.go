@@ -30,7 +30,7 @@ func TestBTCUC_CreateTransaction(t *testing.T) {
 	}
 
 	tests := map[string]func(t *testing.T, ctrl *gomock.Controller) test{
-		"Successfully create Transaction": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Create transaction, When repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			now := time.Now()
@@ -62,7 +62,7 @@ func TestBTCUC_CreateTransaction(t *testing.T) {
 				wantErr: nil,
 			}
 		},
-		"Failed create Transaction": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Create transaction, When repository failed to executed, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			now := time.Now()
@@ -125,7 +125,7 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 	}
 
 	tests := map[string]func(t *testing.T, ctrl *gomock.Controller) test{
-		"Successfully get list Transactions": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of List transactions, When repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			now := time.Now()
@@ -155,7 +155,7 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 				wantErr: nil,
 			}
 		},
-		"Failed get list Transactions": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of List transaction, When repository failed to executed, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			args := args{
@@ -212,7 +212,7 @@ func TestBTCUC_GetUserBalance(t *testing.T) {
 	}
 
 	tests := map[string]func(t *testing.T, ctrl *gomock.Controller) test{
-		"Successfully get User balance": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Get User balance, When repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			args := args{
@@ -236,7 +236,7 @@ func TestBTCUC_GetUserBalance(t *testing.T) {
 				wantErr: nil,
 			}
 		},
-		"Failed get User balance": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Get User balance, When repository failed to executed, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			args := args{

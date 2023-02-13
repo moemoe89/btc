@@ -2,14 +2,20 @@ package datastore
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	rpc "github.com/moemoe89/btc/api/go/grpc"
+	"github.com/moemoe89/btc/internal/entities/repository"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/moemoe89/btc/internal/entities/repository"
 	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+var (
+	// ErrNotFound is an error for indicates record not found.
+	ErrNotFound = errors.New("error not found")
 )
 
 type btcRepo struct {
@@ -32,7 +38,7 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 
 	err = r.db.QueryRow(ctx, "SELECT id FROM users WHERE id = $1", params.UserID).Scan(&id)
 	if err == pgx.ErrNoRows {
-		return nil, fmt.Errorf("user id: %d not found", params.UserID)
+		return nil, fmt.Errorf("user id: %d not found: %w", params.UserID, ErrNotFound)
 	}
 
 	if err != nil {
@@ -120,7 +126,7 @@ func (r *btcRepo) GetUserBalance(ctx context.Context, userID int64) (*rpc.UserBa
 
 	err := r.db.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", userID).Scan(&balance)
 	if err == pgx.ErrNoRows {
-		return nil, fmt.Errorf("user id: %d not found", userID)
+		return nil, fmt.Errorf("user id: %d not found: %w", userID, ErrNotFound)
 	}
 
 	if err != nil {

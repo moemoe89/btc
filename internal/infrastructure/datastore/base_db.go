@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+var (
+	dbOnce sync.Once
 )
 
 var (
@@ -23,32 +28,39 @@ type BaseRepo struct {
 	db *pgxpool.Pool
 }
 
-// GetDatabase returns postgresql Pool.
-func GetDatabase() *pgxpool.Pool {
-	if db != nil {
-		return db
+func getConnString() string {
+	if os.Getenv("APP_ENV") == "test" || os.Getenv("APP_ENV") == "" {
+		return "postgres://test:test@localhost:5432/test?sslmode=disable"
 	}
 
-	ctx := context.Background()
-
-	var err error
-
-	connString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
+	return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST")+":"+os.Getenv("POSTGRES_PORT"), // for lint purpose
 		os.Getenv("POSTGRES_DB"),
 	)
+}
 
-	db, err = pgxpool.New(ctx, connString)
-	if err != nil {
-		log.Fatalf("failed to connect to timescaleDB pool: %v", err)
-	}
+// GetDatabase returns postgresql Pool.
+func GetDatabase() *pgxpool.Pool {
+	dbOnce.Do(func() {
+		ctx := context.Background()
 
-	err = db.Ping(ctx)
-	if err != nil {
-		log.Fatalf("failed to ping database: %v", err)
-	}
+		var err error
+
+		connString := getConnString()
+
+		// Use default config.
+		db, err = pgxpool.New(ctx, connString)
+		if err != nil {
+			log.Fatalf("failed to connect to timescaleDB pool: %v", err)
+		}
+
+		err = db.Ping(ctx)
+		if err != nil {
+			log.Fatalf("failed to ping database: %v", err)
+		}
+	})
 
 	return db
 }
