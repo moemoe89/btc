@@ -67,16 +67,16 @@ func (mr *GoMockBTCUsecaseMockRecorder) GetUserBalance(ctx, userID interface{}) 
 }
 
 // ListTransaction mocks base method.
-func (m *GoMockBTCUsecase) ListTransaction(ctx context.Context, userID int64) ([]*grpc.Transaction, error) {
+func (m *GoMockBTCUsecase) ListTransaction(ctx context.Context, params *repository.ListTransactionParams) ([]*grpc.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTransaction", ctx, userID)
+	ret := m.ctrl.Call(m, "ListTransaction", ctx, params)
 	ret0, _ := ret[0].([]*grpc.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListTransaction indicates an expected call of ListTransaction.
-func (mr *GoMockBTCUsecaseMockRecorder) ListTransaction(ctx, userID interface{}) *gomock.Call {
+func (mr *GoMockBTCUsecaseMockRecorder) ListTransaction(ctx, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransaction", reflect.TypeOf((*GoMockBTCUsecase)(nil).ListTransaction), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransaction", reflect.TypeOf((*GoMockBTCUsecase)(nil).ListTransaction), ctx, params)
 }

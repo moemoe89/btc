@@ -114,7 +114,7 @@ func TestBTCUC_CreateTransaction(t *testing.T) {
 func TestBTCUC_ListTransaction(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		userID int64
+		params *repository.ListTransactionParams
 	}
 
 	type test struct {
@@ -128,23 +128,28 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 		"Given valid request of List transactions, When repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
+			userID := int64(1)
 			now := time.Now()
 
 			args := args{
-				ctx:    ctx,
-				userID: 1,
+				ctx: ctx,
+				params: &repository.ListTransactionParams{
+					UserID:        userID,
+					StartDatetime: now,
+					EndDatetime:   now,
+				},
 			}
 
 			want := []*rpc.Transaction{
 				{
-					UserId:   1,
+					UserId:   userID,
 					Datetime: timestamppb.New(now),
 					Amount:   100,
 				},
 			}
 
 			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
-			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.userID).Return(want, nil)
+			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(want, nil)
 
 			return test{
 				fields: fields{
@@ -158,13 +163,20 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 		"Given valid request of List transaction, When repository failed to executed, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
+			userID := int64(1)
+			now := time.Now()
+
 			args := args{
-				ctx:    ctx,
-				userID: 1,
+				ctx: ctx,
+				params: &repository.ListTransactionParams{
+					UserID:        userID,
+					StartDatetime: now,
+					EndDatetime:   now,
+				},
 			}
 
 			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
-			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.userID).Return(nil, errInternal)
+			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(nil, errInternal)
 
 			return test{
 				fields: fields{
@@ -186,7 +198,7 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 
 			sut := sut(tt.fields)
 
-			got, err := sut.ListTransaction(tt.args.ctx, tt.args.userID)
+			got, err := sut.ListTransaction(tt.args.ctx, tt.args.params)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
 			} else {

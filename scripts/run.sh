@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export APP_ENV=dev
 export SERVER_PORT=8080
 export POSTGRES_USER=test
 export POSTGRES_PASSWORD=test

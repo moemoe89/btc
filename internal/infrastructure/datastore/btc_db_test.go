@@ -141,7 +141,7 @@ func TestBTCRepo_CreateTransaction(t *testing.T) {
 func TestBTCRepo_ListTransaction(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		userID int64
+		params *repository.ListTransactionParams
 	}
 
 	type test struct {
@@ -159,18 +159,25 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 			userID := int64(1988)
 			balance1 := float32(100.5)
 			balance2 := float32(900.6)
+
+			// 2023-02-12 02:35:38 +0000 UTC
 			datetime1 := &timestamppb.Timestamp{
-				Seconds: 1676252796,
+				Seconds: 1676169338,
 				Nanos:   0,
 			}
+			// 2023-02-14 01:46:36 +0000 UTC
 			datetime2 := &timestamppb.Timestamp{
 				Seconds: 1676339196,
 				Nanos:   0,
 			}
 
 			args := args{
-				ctx:    context.Background(),
-				userID: userID,
+				ctx: context.Background(),
+				params: &repository.ListTransactionParams{
+					UserID:        userID,
+					StartDatetime: datetime1.AsTime(),
+					EndDatetime:   datetime1.AsTime().Add(1 * time.Hour),
+				},
 			}
 
 			want := []*rpc.Transaction{
@@ -178,11 +185,6 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 					UserId:   userID,
 					Datetime: datetime1,
 					Amount:   balance1,
-				},
-				{
-					UserId:   userID,
-					Datetime: datetime2,
-					Amount:   balance2,
 				},
 			}
 
@@ -204,10 +206,10 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 					_, err = db.Exec(context.Background(), "INSERT INTO users (id, balance) VALUES ($1, $2)", userID, 0)
 					assert.NoError(t, err)
 
-					_, err = db.Exec(context.Background(), "INSERT INTO transactions (time, user_id, amount) VALUES ($1, $2, $3)", datetime1.AsTime(), userID, balance1)
+					_, err = db.Exec(context.Background(), "INSERT INTO transactions (datetime, user_id, amount) VALUES ($1, $2, $3)", datetime1.AsTime(), userID, balance1)
 					assert.NoError(t, err)
 
-					_, err = db.Exec(context.Background(), "INSERT INTO transactions (time, user_id, amount) VALUES ($1, $2, $3)", datetime2.AsTime(), userID, balance2)
+					_, err = db.Exec(context.Background(), "INSERT INTO transactions (datetime, user_id, amount) VALUES ($1, $2, $3)", datetime2.AsTime(), userID, balance2)
 					assert.NoError(t, err)
 				},
 				afterFunc: func(t *testing.T) {
@@ -238,7 +240,7 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 
 			sut := di.GetBTCRepo()
 
-			got, err := sut.ListTransaction(tt.args.ctx, tt.args.userID)
+			got, err := sut.ListTransaction(tt.args.ctx, tt.args.params)
 
 			if !assert.ErrorIs(t, err, tt.wantErr) {
 				return

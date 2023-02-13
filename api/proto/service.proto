@@ -37,6 +37,10 @@ message CreateTransactionRequest {
 message ListTransactionRequest {
   // (Required) The ID of User.
   int64 user_id = 1 [(validate.rules).int64.gte = 1];
+  // (Required) The start date and time filter of the transactions.
+  google.protobuf.Timestamp start_datetime = 2 [(validate.rules).timestamp.required = true];
+  // (Required) The end date and time filter of the transactions.
+  google.protobuf.Timestamp end_datetime = 3 [(validate.rules).timestamp.required = true];
 }
 
 // ListTransactionResponse

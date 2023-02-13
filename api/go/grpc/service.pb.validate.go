@@ -203,6 +203,28 @@ func (m *ListTransactionRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if m.GetStartDatetime() == nil {
+		err := ListTransactionRequestValidationError{
+			field:  "StartDatetime",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetEndDatetime() == nil {
+		err := ListTransactionRequestValidationError{
+			field:  "EndDatetime",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return ListTransactionRequestMultiError(errors)
 	}

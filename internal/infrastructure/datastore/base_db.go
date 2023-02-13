@@ -3,9 +3,12 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"sync"
+
+	"github.com/moemoe89/btc/pkg/di"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -15,8 +18,17 @@ var (
 )
 
 var (
-	db *pgxpool.Pool
+	pool *pgxpool.Pool
 )
+
+type wrapPool struct {
+	pool *pgxpool.Pool
+}
+
+func (w *wrapPool) Close() error {
+	w.pool.Close()
+	return nil
+}
 
 // NewBaseRepo returns a base repository.
 func NewBaseRepo(db *pgxpool.Pool) *BaseRepo {
@@ -51,16 +63,22 @@ func GetDatabase() *pgxpool.Pool {
 		connString := getConnString()
 
 		// Use default config.
-		db, err = pgxpool.New(ctx, connString)
+		pool, err = pgxpool.New(ctx, connString)
 		if err != nil {
 			log.Fatalf("failed to connect to timescaleDB pool: %v", err)
 		}
 
-		err = db.Ping(ctx)
+		err = pool.Ping(ctx)
 		if err != nil {
 			log.Fatalf("failed to ping database: %v", err)
 		}
+
+		var c io.Closer = &wrapPool{
+			pool: pool,
+		}
+
+		di.RegisterCloser("TimescaleDB Connection", c)
 	})
 
-	return db
+	return pool
 }
