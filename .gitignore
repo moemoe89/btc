@@ -1,5 +1,12 @@
 # test
 .coverage
+.godog
+
+# os x files
+*.DS_Store
+
+# log
+*.log
 
 # binary
 main

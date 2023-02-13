@@ -6,9 +6,8 @@ package usecases
 import (
 	"context"
 
-	"github.com/moemoe89/btc/internal/entities/repository"
-
 	rpc "github.com/moemoe89/btc/api/go/grpc"
+	"github.com/moemoe89/btc/internal/entities/repository"
 )
 
 // BTCUsecase defines BTC transactions related domain functionality.
