@@ -33,7 +33,7 @@ func GetBTCGRPCServer() server.Server {
 // getGRPCServer
 func getGRPCServer(grpcServer server.Server, register server.HandlerRegister) server.Server {
 	grpcServerOnce.Do(func() {
-		opts := GetTrace()
+		opts := GetMiddleware()
 
 		port := os.Getenv("SERVER_PORT")
 

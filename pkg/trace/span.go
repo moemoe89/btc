@@ -1,5 +1,8 @@
 package trace
 
+//go:generate rm -f ./span_mock.go
+//go:generate mockgen -destination span_mock.go -package trace -mock_names Tracer=GoMockTracer -source span.go
+
 import (
 	"context"
 
@@ -9,10 +12,18 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// NewSpan returns a new span from the global tracer. Depending on the `cus`
+// Tracer provides log tracing functionality.
+type Tracer interface {
+	StartSpan(ctx context.Context, name string, cus SpanCustomiser) (context.Context, trace.Span)
+}
+
+type otelTracer struct {
+}
+
+// StartSpan returns a new span from the global tracer. Depending on the `cus`
 // argument, the span is either a plain one or a customised one. Each resulting
 // span must be completed with `defer span.End()` right after the call.
-func NewSpan(ctx context.Context, name string, cus SpanCustomiser) (context.Context, trace.Span) {
+func (t *otelTracer) StartSpan(ctx context.Context, name string, cus SpanCustomiser) (context.Context, trace.Span) {
 	if cus == nil {
 		return otel.Tracer("").Start(ctx, name)
 	}

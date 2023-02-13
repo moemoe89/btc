@@ -1,5 +1,8 @@
 package trace
 
+//go:generate rm -f ./provider_mock.go
+//go:generate mockgen -destination provider_mock.go -package trace -mock_names Provider=GoMockProvider -source provider.go
+
 import (
 	"context"
 
@@ -12,6 +15,15 @@ import (
 	sdkresource "go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
+
+// Provider is an interface for trace Provider.
+type Provider interface {
+	// Tracer creates a named tracer that implements Tracer interface.
+	// If the name is an empty string then provider uses default name.
+	Tracer() Tracer
+	// Close closes the tracer provider.
+	Close(ctx context.Context) error
+}
 
 // ProviderConfig represents the provider configuration and used to create a new
 // `Provider` type.
@@ -27,7 +39,7 @@ type ProviderConfig struct {
 // Provider represents the tracer provider. Depending on the `config.Disabled`
 // parameter, it will either use a "live" provider or a "no operations" version.
 // The "no operations" means, tracing will be globally disabled.
-type Provider struct {
+type tracerProvider struct {
 	provider trace.TracerProvider
 }
 
@@ -35,14 +47,14 @@ type Provider struct {
 // the tracer provider as well as the global tracer for spans.
 func NewProvider(config ProviderConfig) (Provider, error) {
 	if config.Disabled {
-		return Provider{provider: trace.NewNoopTracerProvider()}, nil
+		return &tracerProvider{provider: trace.NewNoopTracerProvider()}, nil
 	}
 
 	exp, err := jaeger.New(
 		jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(config.JaegerEndpoint)),
 	)
 	if err != nil {
-		return Provider{}, err
+		return &tracerProvider{}, err
 	}
 
 	prv := sdktrace.NewTracerProvider(
@@ -61,13 +73,18 @@ func NewProvider(config ProviderConfig) (Provider, error) {
 		propagation.Baggage{},
 	))
 
-	return Provider{provider: prv}, nil
+	return &tracerProvider{provider: prv}, nil
+}
+
+// Tracer implements trace.Provider.
+func (t *tracerProvider) Tracer() Tracer {
+	return &otelTracer{}
 }
 
 // Close shuts down the tracer provider only if it was not "no operations"
 // version.
-func (p Provider) Close(ctx context.Context) error {
-	if prv, ok := p.provider.(*sdktrace.TracerProvider); ok {
+func (t tracerProvider) Close(ctx context.Context) error {
+	if prv, ok := t.provider.(*sdktrace.TracerProvider); ok {
 		return prv.Shutdown(ctx)
 	}
 
