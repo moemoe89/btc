@@ -51,8 +51,10 @@ func (u *btcUsecase) ListTransaction( //nolint: funlen
 		u.logger.Warn("failed gets user transactions from redis", zap.Error(err))
 	}
 
-	// If no error, assume the cache exists.
-	if err == nil {
+	_, ok := val.(string)
+
+	// If no error and value is string, assume cache is exists.
+	if ok && err == nil {
 		// Unmarshal the cache []byte to proto message.
 		// This is also should not become blocker,
 		// thus if error happen we should do the normal query.
@@ -109,8 +111,10 @@ func (u *btcUsecase) GetUserBalance(ctx context.Context, userID int64) (*rpc.Use
 		u.logger.Warn("failed gets user balance from redis", zap.Error(err))
 	}
 
-	// If no error, assume the cache exists.
-	if err == nil {
+	_, ok := val.(string)
+
+	// If no error and value is string, assume cache is exists.
+	if ok && err == nil {
 		// Unmarshal the cache []byte to proto message.
 		// This is also should not become blocker,
 		// thus if error happen we should do the normal query.
