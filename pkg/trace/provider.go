@@ -1,8 +1,5 @@
 package trace
 
-//go:generate rm -f ./provider_mock.go
-//go:generate mockgen -destination provider_mock.go -package trace -mock_names Provider=GoMockProvider -source provider.go
-
 import (
 	"context"
 

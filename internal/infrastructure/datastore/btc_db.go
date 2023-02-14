@@ -97,7 +97,7 @@ func (r *btcRepo) ListTransaction(ctx context.Context, params *repository.ListTr
 	type data struct {
 		Datetime time.Time
 		UserID   int64
-		Amount   float32
+		Amount   float64
 	}
 
 	var transactions []*rpc.Transaction
@@ -122,7 +122,7 @@ func (r *btcRepo) ListTransaction(ctx context.Context, params *repository.ListTr
 
 // GetUserBalance get the latest balance for a specific User.
 func (r *btcRepo) GetUserBalance(ctx context.Context, userID int64) (*rpc.UserBalance, error) {
-	var balance float32
+	var balance float64
 
 	err := r.db.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", userID).Scan(&balance)
 	if err == pgx.ErrNoRows {

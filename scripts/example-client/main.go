@@ -27,7 +27,7 @@ func main() {
 	transaction, err := client.CreateTransaction(context.Background(), &rpc.CreateTransactionRequest{
 		UserId:   1,
 		Datetime: timestamppb.New(time.Now()),
-		Amount:   float32(rand.Int()),
+		Amount:   rand.Float64(),
 	})
 	if err != nil {
 		log.Fatal(err)

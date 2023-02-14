@@ -14,7 +14,7 @@ import (
 type CreateTransactionParams struct {
 	UserID   int64     // required
 	Datetime time.Time // required
-	Amount   float32   // required
+	Amount   float64   // required
 }
 
 // ListTransactionParams parameter for lists a BTC transactions.
