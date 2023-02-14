@@ -23,8 +23,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [7. Run the service](#7-run-the-service)
     - [8. Test the service](#8-test-the-service)
     - [9. Load Testing](#9-load-testing)
-- [Instrumentation](#instrumentation)
-  - [OpenTelemetry](#opentelemetry)
+- [Project Structure](#project-structure)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
@@ -93,6 +92,15 @@ For generating the Proto files, make sure to have these libs installed on your s
 The validation for this API using `protoc-gen-validate`, for the detail please refer to this lib:
 
 * https://github.com/bufbuild/protoc-gen-validate
+
+This service also implementing gRPC-Gateway with this library:
+
+* https://github.com/grpc-ecosystem/grpc-gateway
+
+For generating the gRPC-Gateway and OpenAPI files, there's required additional package such as:
+
+* github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+* github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 
 Then, generating the Protobuf files can be done my this command:
 
@@ -349,9 +357,31 @@ ghz --insecure --proto ./api/proto/service.proto --call BTCService.ListTransacti
 ghz --insecure --proto ./api/proto/service.proto --call BTCService.GetUserBalance -d '{ "user_id": 1 }' 0.0.0.0:8080 -O html -o load_testing_get_user_balance.html
 ```
 
-# Documentation
+## Project Structure
 
-## Visualize Code Diagram
+This project follow https://github.com/golang-standards/project-layout
+
+However, for have a clear direction when working in this project, here are some small guide about each directory:
+
+* [api](api): contains Protobuf files, generated protobuf, swagger, etc.
+* [build](build): Docker file for the service, migration, etc.
+* [cmd](cmd): main Go file for running the service, producer, consumer, etc.
+* [development](development): file to support development like docker-compose.
+* [docs](docs): file about project documentations such as diagram, sequence diagram, etc.
+* [internal](internal): internal code that can't be shared.
+  * [internal/adapters/grpchandler](internal/adapters/grpchandler): adapter layer that serve into gRPC service.
+  * [internal/di](internal/di): dependencies injection for connecting each layer.
+  * [internal/entities/repository](internal/entities/repository): data entities to connect with repository layer.
+  * [internal/infrastructure](internal/infrastructure): codes that doing database operations.
+  * [internal/usecases](internal/usecases): business logic that connect to repository layer, RPC & HTTP client, etc.
+* [migrations](migrations): database migration files.
+* [pkg](pkg): package code that can be shared.
+* [scripts](scripts): shell script, go script to help build or testing something.
+* [tools](tools): package that need to store on go.mod in order to easily do installation.
+
+## Documentation
+
+### Visualize Code Diagram
 
 To help give a better understanding about reading the code
 such as relations with packages and types, here are some diagrams listed
@@ -366,7 +396,7 @@ generated automatically using [https://github.com/ofabry/go-callvis](https://git
 
 <!-- end diagram doc -->
 
-## RPC Sequence Diagram
+### RPC Sequence Diagram
 
 To help give a better understanding about reading the RPC flow
 such as relations with usecases and repositories, here are some sequence diagrams (generated automatically) listed in Markdown file and written in Mermaid JS [https://mermaid-js.github.io/mermaid/](https://mermaid-js.github.io/mermaid/) format.

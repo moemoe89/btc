@@ -12,7 +12,7 @@
 main
 btc
 
-# timescaledb data
+# development data
 development/timescaledb
 
 # vendor
