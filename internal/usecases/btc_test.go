@@ -3,14 +3,18 @@ package usecases_test
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	rpc "github.com/moemoe89/btc/api/go/grpc"
 	"github.com/moemoe89/btc/internal/entities/repository"
+	"github.com/moemoe89/btc/pkg/kvs"
 
 	"github.com/golang/mock/gomock"
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -120,12 +124,12 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 	type test struct {
 		fields  fields
 		args    args
-		want    []*rpc.Transaction
+		want    *rpc.ListTransactionResponse
 		wantErr error
 	}
 
 	tests := map[string]func(t *testing.T, ctrl *gomock.Controller) test{
-		"Given valid request of List transactions, When repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Get User balance, When repository executed successfully without cache, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			userID := int64(1)
@@ -140,7 +144,7 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 				},
 			}
 
-			want := []*rpc.Transaction{
+			transactions := []*rpc.Transaction{
 				{
 					UserId:   userID,
 					Datetime: timestamppb.New(now),
@@ -148,19 +152,191 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 				},
 			}
 
+			want := &rpc.ListTransactionResponse{
+				Transactions: transactions,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
 			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
-			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(want, nil)
+			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(transactions, nil)
+
+			key := fmt.Sprintf("user:transactions:%d:%d:%d",
+				userID,
+				now.UnixNano(),
+				now.UnixNano(),
+			)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, redis.Nil)
+			redisKVS.EXPECT().Set(ctx, key, b, time.Second*1).Return(nil, nil)
 
 			return test{
 				fields: fields{
 					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
 				},
 				args:    args,
 				want:    want,
 				wantErr: nil,
 			}
 		},
-		"Given valid request of List transaction, When repository failed to executed, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Get User balance, When repository executed successfully without cache and failed store cache, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			userID := int64(1)
+			now := time.Now()
+
+			args := args{
+				ctx: ctx,
+				params: &repository.ListTransactionParams{
+					UserID:        userID,
+					StartDatetime: now,
+					EndDatetime:   now,
+				},
+			}
+
+			transactions := []*rpc.Transaction{
+				{
+					UserId:   userID,
+					Datetime: timestamppb.New(now),
+					Amount:   100,
+				},
+			}
+
+			want := &rpc.ListTransactionResponse{
+				Transactions: transactions,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
+			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
+			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(transactions, nil)
+
+			key := fmt.Sprintf("user:transactions:%d:%d:%d",
+				userID,
+				now.UnixNano(),
+				now.UnixNano(),
+			)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, redis.Nil)
+			redisKVS.EXPECT().Set(ctx, key, b, time.Second*1).Return(nil, errors.New("error"))
+
+			return test{
+				fields: fields{
+					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
+		"Given valid request of Get User balance, When cache exists, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			userID := int64(1)
+			now := time.Now()
+
+			args := args{
+				ctx: ctx,
+				params: &repository.ListTransactionParams{
+					UserID:        userID,
+					StartDatetime: now,
+					EndDatetime:   now,
+				},
+			}
+
+			transactions := []*rpc.Transaction{
+				{
+					UserId:   userID,
+					Datetime: timestamppb.New(now),
+					Amount:   100,
+				},
+			}
+
+			want := &rpc.ListTransactionResponse{
+				Transactions: transactions,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
+			key := fmt.Sprintf("user:transactions:%d:%d:%d",
+				userID,
+				now.UnixNano(),
+				now.UnixNano(),
+			)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(string(b), nil)
+
+			return test{
+				fields: fields{
+					redis: redisKVS,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
+		"Given valid request of Get User balance, When failed getting cache but repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			userID := int64(1)
+			now := time.Now()
+
+			args := args{
+				ctx: ctx,
+				params: &repository.ListTransactionParams{
+					UserID:        userID,
+					StartDatetime: now,
+					EndDatetime:   now,
+				},
+			}
+
+			transactions := []*rpc.Transaction{
+				{
+					UserId:   userID,
+					Datetime: timestamppb.New(now),
+					Amount:   100,
+				},
+			}
+
+			want := &rpc.ListTransactionResponse{
+				Transactions: transactions,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
+			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
+			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(transactions, nil)
+
+			key := fmt.Sprintf("user:transactions:%d:%d:%d",
+				userID,
+				now.UnixNano(),
+				now.UnixNano(),
+			)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, errors.New("error"))
+			redisKVS.EXPECT().Set(ctx, key, b, time.Second*1).Return(nil, nil)
+
+			return test{
+				fields: fields{
+					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
+		"Given valid request of List transaction, When repository failed to executed with no cache, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			userID := int64(1)
@@ -178,9 +354,19 @@ func TestBTCUC_ListTransaction(t *testing.T) {
 			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
 			mockJourneyRepo.EXPECT().ListTransaction(args.ctx, args.params).Return(nil, errInternal)
 
+			key := fmt.Sprintf("user:transactions:%d:%d:%d",
+				userID,
+				now.UnixNano(),
+				now.UnixNano(),
+			)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, redis.Nil)
+
 			return test{
 				fields: fields{
 					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
 				},
 				args:    args,
 				want:    nil,
@@ -224,7 +410,7 @@ func TestBTCUC_GetUserBalance(t *testing.T) {
 	}
 
 	tests := map[string]func(t *testing.T, ctrl *gomock.Controller) test{
-		"Given valid request of Get User balance, When repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Get User balance, When repository executed successfully without cache, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			args := args{
@@ -236,19 +422,126 @@ func TestBTCUC_GetUserBalance(t *testing.T) {
 				Balance: 100,
 			}
 
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
 			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
 			mockJourneyRepo.EXPECT().GetUserBalance(args.ctx, args.userID).Return(want, nil)
+
+			key := fmt.Sprintf("user:balance:%d", args.userID)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, redis.Nil)
+			redisKVS.EXPECT().Set(ctx, key, b, time.Second*1).Return(nil, nil)
 
 			return test{
 				fields: fields{
 					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
 				},
 				args:    args,
 				want:    want,
 				wantErr: nil,
 			}
 		},
-		"Given valid request of Get User balance, When repository failed to executed, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
+		"Given valid request of Get User balance, When repository executed successfully without cache and failed store cache, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx:    ctx,
+				userID: 1,
+			}
+
+			want := &rpc.UserBalance{
+				Balance: 100,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
+			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
+			mockJourneyRepo.EXPECT().GetUserBalance(args.ctx, args.userID).Return(want, nil)
+
+			key := fmt.Sprintf("user:balance:%d", args.userID)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, redis.Nil)
+			redisKVS.EXPECT().Set(ctx, key, b, time.Second*1).Return(nil, errors.New("error"))
+
+			return test{
+				fields: fields{
+					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
+		"Given valid request of Get User balance, When failed getting cache but repository executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx:    ctx,
+				userID: 1,
+			}
+
+			want := &rpc.UserBalance{
+				Balance: 100,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
+			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
+			mockJourneyRepo.EXPECT().GetUserBalance(args.ctx, args.userID).Return(want, nil)
+
+			key := fmt.Sprintf("user:balance:%d", args.userID)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, errors.New("error"))
+			redisKVS.EXPECT().Set(ctx, key, b, time.Second*1).Return(nil, nil)
+
+			return test{
+				fields: fields{
+					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
+		"Given valid request of Get User balance, When cache exists, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx:    ctx,
+				userID: 1,
+			}
+
+			want := &rpc.UserBalance{
+				Balance: 100,
+			}
+
+			b, err := protojson.Marshal(want)
+			assert.NoError(t, err)
+
+			key := fmt.Sprintf("user:balance:%d", args.userID)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(string(b), nil)
+
+			return test{
+				fields: fields{
+					redis: redisKVS,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
+		"Given valid request of Get User balance, When repository failed to executed with no cache, Return an error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
 			args := args{
@@ -259,9 +552,15 @@ func TestBTCUC_GetUserBalance(t *testing.T) {
 			mockJourneyRepo := repository.NewGoMockBTCRepo(ctrl)
 			mockJourneyRepo.EXPECT().GetUserBalance(args.ctx, args.userID).Return(nil, errInternal)
 
+			key := fmt.Sprintf("user:balance:%d", args.userID)
+
+			redisKVS := kvs.NewGoMockClient(ctrl)
+			redisKVS.EXPECT().Get(ctx, key).Return(nil, redis.Nil)
+
 			return test{
 				fields: fields{
 					btcRepo: mockJourneyRepo,
+					redis:   redisKVS,
 				},
 				args:    args,
 				want:    nil,

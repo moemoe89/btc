@@ -16,6 +16,7 @@ main-consumer
 # development data
 development/timescaledb
 development/rabbitmq
+development/redis
 
 # vendor
 vendor/
