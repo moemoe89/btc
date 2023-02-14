@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/google/uuid"
@@ -47,9 +48,13 @@ func main() {
 		log.Fatalf("Failed to declare a queue: %v", err)
 	}
 
+	rand.Seed(time.Now().UnixNano())
+	num := rand.Float64() * 100
+	num = float64(int(num+0.5)) / 100
+
 	trx := &Transaction{
 		UserID:   1,
-		Amount:   120,
+		Amount:   num,
 		Datetime: time.Now(),
 	}
 

@@ -398,9 +398,14 @@ After that you can try to send a message by publishing a message.
 go run ./scripts/example-publish
 ```
 
-> NOTE: If you have any difficulties to run the service, easily just run all dependencies by docker-compose for the example:
+# NOTE
+
+> If you have any difficulties to run the service, easily just run all dependencies by docker-compose for the example:
 > 
 > `docker-compose -f ./development/docker-compose.yml up`
+>
+> Then you will have all services running like `timescaledb`, `pgadmin`, `jaeger`, `rabbitmq`
+> also running the `migration` and run `btc-server` + `btc-consumer`.
 
 ## Project Structure
 
