@@ -1,5 +1,9 @@
 # BTC Service
 
+---
+
+[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml)
+
 BTC Service handles BTC transaction and User balance related data.
 
 ## Table of Contents
