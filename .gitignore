@@ -11,9 +11,11 @@
 # binary
 main
 btc
+main-consumer
 
 # development data
 development/timescaledb
+development/rabbitmq
 
 # vendor
 vendor/

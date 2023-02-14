@@ -49,3 +49,12 @@ services:
     ports:
       - "14268:14268"   # jaeger-collector HTTP server (tracer provider)
       - "16686:16686"   # HTTP server (browser UI)
+  # rabbitmq
+  rabbitmq:
+    image: rabbitmq:3.11.8
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq
