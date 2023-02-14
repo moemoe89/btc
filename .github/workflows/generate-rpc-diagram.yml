@@ -41,6 +41,11 @@ jobs:
           key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-golang-
+      - name: Download readme
+        uses: actions/download-artifact@v3
+        with:
+          name: readme-from-test
+          path: .
       - name: Generate RPC Diagram
         run: |
           make sequence-diagram RPC=\*

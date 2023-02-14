@@ -51,6 +51,28 @@ jobs:
       - name: Run Unit Test
         run: |
           make test
+      - name: Build Badge
+        run: |
+          TOTAL=$(go tool cover -func=.coverage/internal.mockless.coverage | awk -F" " '/total:/ {print $3}')
+
+          if (( $(echo "${TOTAL%\%} <= 50" | bc -l) )) ; then
+              COLOR=red
+          elif (( $(echo "${TOTAL%\%} > 50" | bc -l) )); then
+              COLOR=yellowgreen
+          elif (( $(echo "${TOTAL%\%} > 80" | bc -l) )); then
+              COLOR=green
+          elif (( $(echo "${TOTAL%\%} > 90" | bc -l) )); then
+              COLOR=brightgreen
+          fi
+
+          BADGE="<img src=\"https://img.shields.io/badge/coverage-${TOTAL}25-${COLOR}\">"
+
+          sed -i "/<!-- start-coverage -->/,/<!-- end-coverage -->/ s|>.*<|>${BADGE}<|" README.md
+      - name: Upload readme
+        uses: actions/upload-artifact@v3
+        with:
+          name: readme-from-test
+          path: README.md
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:

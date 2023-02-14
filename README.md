@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml?query=workflow%3Atest)
+[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml?query=workflow%3Atest) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-100%25-brightgreen"><!-- end-coverage -->
 
 BTC Service handles BTC transaction and User balance related data.
 
@@ -21,14 +21,15 @@ BTC Service handles BTC transaction and User balance related data.
     - [1. API](#1-api)
     - [2. TimescaleDB + GUI](#2-timescaledb--gui)
     - [3. Migration](#3-migration)
-    - [4. Instrumentation](#4-instrumentation)
-    - [5. Unit Test](#5-unit-test)
-    - [6. Linter](#6-linter)
-    - [7. Mock](#7-mock)
-    - [8. Run the service](#8-run-the-service)
-    - [9. Test the service](#9-test-the-service)
-    - [10. Load Testing](#10-load-testing)
-    - [11. Messaging](#11-messaging)
+    - [4. Cache](#4-cache)
+    - [5. Instrumentation](#5-instrumentation)
+    - [6. Unit Test](#6-unit-test)
+    - [7. Linter](#7-linter)
+    - [8. Mock](#8-mock)
+    - [9. Run the service](#9-run-the-service)
+    - [10. Test the service](#10-test-the-service)
+    - [11. Load Testing](#11-load-testing)
+    - [12. Messaging](#12-messaging)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)

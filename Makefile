@@ -27,9 +27,9 @@ lint:
 
 test:
 	mkdir -p .coverage/html
-	go test -v -race -cover -coverprofile=.coverage/internal.coverage.tmp ./internal/... && \
-	cat .coverage/internal.coverage.tmp | grep -v "_mock.go\|_mockgen.go" > .coverage/internal.coverage && \
-	go tool cover -html=.coverage/internal.coverage -o .coverage/html/internal.coverage.html;
+	go test -v -race -cover -coverprofile=.coverage/internal.coverage ./internal/... && \
+	cat .coverage/internal.coverage | grep -v "_mock.go\|_mockgen.go" > .coverage/internal.mockless.coverage && \
+	go tool cover -html=.coverage/internal.mockless.coverage -o .coverage/html/internal.coverage.html;
 
 diagram:
 	@echo "\n>>> Run Generate Diagram\n"
