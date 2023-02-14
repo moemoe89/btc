@@ -398,6 +398,10 @@ After that you can try to send a message by publishing a message.
 go run ./scripts/example-publish
 ```
 
+> NOTE: If you have any difficulties to run the service, easily just run all dependencies by docker-compose for the example:
+> 
+> `docker-compose -f ./development/docker-compose.yml up`
+
 ## Project Structure
 
 This project follow https://github.com/golang-standards/project-layout

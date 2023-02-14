@@ -4,16 +4,32 @@ services:
   btc:
     image: golang:1.19
     expose:
-      - 8080
+      - "8080:8080" # gRPC
+      - "8081:8081" # HTTP
     tty: true
+    restart: always
     ports:
       - "8080:8080"
     environment:
+      APP_ENV: dev
       SERVER_PORT: 8080
-      WORK: /go/src/github.com/moemoe89/btc
-      GOPROXY: "http://module_proxy:8002"
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_HOST: timescaledb
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: test
+      OTEL_AGENT: http://jaeger:14268/api/traces
     volumes:
-      - ..:/go/src/github.com/moemoe89/btc:cached
+      - ..:/app
+    working_dir: /app
+    command: |
+      go run ./cmd/main.go
+    depends_on:
+      - timescaledb
+      - jaeger
+      - rabbitmq
+    networks:
+      - fullstack
   # timescaledb
   timescaledb:
     image: timescale/timescaledb:latest-pg14
@@ -26,6 +42,8 @@ services:
       POSTGRES_DB: test
     volumes:
       - ./timescaledb:/var/lib/postgresql/data
+    networks:
+      - fullstack
   # pgadmin
   pgadmin:
     image: dpage/pgadmin4
@@ -35,20 +53,27 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
+    networks:
+      - fullstack
   # migration
   migration:
     image: migrate/migrate:v4.15.2
+    restart: always
     volumes:
       - ../migrations:/migrations
     command: [ "-path", "/migrations", "-database", "postgres://test:test@timescaledb:5432/test?sslmode=disable", "up"]
     depends_on:
       - timescaledb
+    networks:
+      - fullstack
   # jaeger
   jaeger:
     image: jaegertracing/all-in-one:1.42.0
     ports:
       - "14268:14268"   # jaeger-collector HTTP server (tracer provider)
       - "16686:16686"   # HTTP server (browser UI)
+    networks:
+      - fullstack
   # rabbitmq
   rabbitmq:
     image: rabbitmq:3.11.8
@@ -58,3 +83,8 @@ services:
     volumes:
       - ./rabbitmq/data/:/var/lib/rabbitmq/
       - ./rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - fullstack
+networks:
+  fullstack:
+    driver: bridge
