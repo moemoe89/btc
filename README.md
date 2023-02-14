@@ -42,7 +42,8 @@ BTC Service handles BTC transaction and User balance related data.
 | Item                      | Description                                                                                                           |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | Golang Version            | [1.19](https://golang.org/doc/go1.19)                                                                                 |
-| Database                  | [timescale](https://www.timescale.com)                                                                                |
+| Database                  | [TimescaleDB](https://www.timescale.com) and [pgx](https://github.com/jackc/pgx)                                      |
+| Cache                     | [Redis](https://redis.com) and [go-redis](https://github.com/redis/go-redis)                                          |
 | Migration                 | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
 | moq                       | [mockgen](https://github.com/golang/mock)                                                                             |
 | Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
@@ -152,7 +153,18 @@ $ docker-compose -f ./development/docker-compose.yml up migration
 This migration also seeds some test data, because when creating a transaction, will require existing User ID.
 By this seeds, we will have 5 users test data, from ID 1 to 5.
 
-### 4. Instrumentation
+### 4. Cache
+
+When getting transactions list and user balance, there's a cache implemented using Redis
+in order to have middle layer and avoid call the main DB frequently.
+
+To start runing Redis, there's a docker-compose command available:
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up redis
+```
+
+### 5. Instrumentation
 
 This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
 The data exported to Jaeger and can be seen in the Jaeger UI [http://localhost:16686](http://localhost:16686)
@@ -163,7 +175,7 @@ For running the Jaeger exporter, easily run with docker-compose command:
 $ docker-compose -f ./development/docker-compose.yml up jaeger
 ```
 
-### 5. Unit Test
+### 6. Unit Test
 
 Make sure the database already running, then you can simply execute the following command to run all test cases in this service:
 
@@ -171,7 +183,7 @@ Make sure the database already running, then you can simply execute the followin
 $ make test
 ```
 
-### 6. Linter
+### 7. Linter
 
 For running the linter make sure these libraries already installed in your system:
 
@@ -184,7 +196,7 @@ Then checks the Go and Proto code style using lint can be done with this command
 $ make lint
 ```
 
-### 7. Mock
+### 8. Mock
 
 This service using Mock in some places like in the repository, usecase, pkg, etc.
 To automatically updating the mock if the interface changed, easily run with `go generate` command:
@@ -193,7 +205,7 @@ To automatically updating the mock if the interface changed, easily run with `go
 $ make mock
 ```
 
-### 8. Run the service
+### 9. Run the service
 
 For running the service, you need the database running and set up some env variables:
 
@@ -206,6 +218,7 @@ export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
 export POSTGRES_DB=test
 export OTEL_AGENT=http://localhost:14268/api/traces
+export REDIS_HOST=localhost:6379
 ```
 
 Or you can just execute the sh file:
@@ -214,7 +227,7 @@ Or you can just execute the sh file:
 $ ./scripts/run.sh
 ```
 
-### 9. Test the service
+### 10. Test the service
 
 The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
 
@@ -290,7 +303,7 @@ you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](ap
 
 By default HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
 
-### 10. Load Testing
+### 11. Load Testing
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 
@@ -379,7 +392,7 @@ ghz --insecure --proto ./api/proto/service.proto --call BTCService.ListTransacti
 ghz --insecure --proto ./api/proto/service.proto --call BTCService.GetUserBalance -d '{ "user_id": 1 }' 0.0.0.0:8080 -O html -o load_testing_get_user_balance.html
 ```
 
-### 11. Messaging
+### 12. Messaging
 
 In order to avoid failing when creates the transaction and support for easily retry,
 there's a simple Event based system using RabbitMQ.
@@ -404,7 +417,7 @@ go run ./scripts/example-publish
 > 
 > `docker-compose -f ./development/docker-compose.yml up`
 >
-> Then you will have all services running like `timescaledb`, `pgadmin`, `jaeger`, `rabbitmq`
+> Then you will have all services running like `timescaledb`, `pgadmin`, `jaeger`, `rabbitmq`, `redis`
 > also running the `migration` and run `btc-server` + `btc-consumer`.
 
 ## Project Structure

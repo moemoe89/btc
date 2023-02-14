@@ -8,5 +8,6 @@ func GetBTCUsecase() usecases.BTCUsecase {
 		GetBTCRepo(),
 		GetTracer().Tracer(),
 		GetLogger(),
+		GetRedis(),
 	)
 }
