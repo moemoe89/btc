@@ -125,7 +125,7 @@ $ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin
 ```
 
 > NOTE:
-> TimescaleDB will use port 5432 and pgAdmin will use 5050, please make sure those port are unused in yur system.
+> TimescaleDB will use port 5432 and pgAdmin will use 5050, please make sure those port are unused in your system.
 > If the port conflicted, you can change the port on the [development/docker-compose.yml](docker-compose.yml) file.
 
 The default email & password for pgAdmin are:
@@ -149,8 +149,8 @@ Make sure the database already running, after that we need some tables and dummy
 $ docker-compose -f ./development/docker-compose.yml up migration
 ```
 
-This migration also seeds some test data, because when creating a transaction, will requires existing user id.
-This seeds, will insert 5 users data, from ID 1 to 5.
+This migration also seeds some test data, because when creating a transaction, will require existing User ID.
+By this seeds, we will have 5 users test data, from ID 1 to 5.
 
 ### 4. Instrumentation
 
@@ -173,7 +173,7 @@ $ make test
 
 ### 6. Linter
 
-For running the linter make sure these libs already installed in your system:
+For running the linter make sure these libraries already installed in your system:
 
 * https://github.com/golangci/golangci-lint
 * https://github.com/yoheimuta/protolint
@@ -190,7 +190,7 @@ This service using Mock in some places like in the repository, usecase, pkg, etc
 To automatically updating the mock if the interface changed, easily run with `go generate` command:
 
 ```sh
-$ go generate ./...
+$ make mock
 ```
 
 ### 8. Run the service
@@ -233,7 +233,7 @@ Basically you just need to import the [api/proto/service.proto](api/proto/servic
 
 #### BloomRPC
 
-BloomRPC will have this issue when trying to import the proto file
+BloomRPC will have these issues when trying to import the proto file:
 
 ```
 Error while importing protos
