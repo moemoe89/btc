@@ -20,10 +20,12 @@ BTC Service handles BTC transaction and User balance related data.
     - [4. Instrumentation](#4-instrumentation)
     - [5. Unit Test](#5-unit-test)
     - [6. Linter](#6-linter)
-    - [7. Run the service](#7-run-the-service)
-    - [8. Test the service](#8-test-the-service)
-    - [9. Load Testing](#9-load-testing)
+    - [7. Mock](#7-mock)
+    - [8. Run the service](#8-run-the-service)
+    - [9. Test the service](#9-test-the-service)
+    - [10. Load Testing](#10-load-testing)
 - [Project Structure](#project-structure)
+- [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
@@ -32,24 +34,24 @@ BTC Service handles BTC transaction and User balance related data.
 
 ## Project Summary
 
-| Item                     | Description                                                                                                           |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Golang Version           | [1.19](https://golang.org/doc/go1.19)                                                                                 |
-| Database                 | [timescale](https://www.timescale.com)                                                                                |
-| Migration                | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
-| moq                      | [mockgen](https://github.com/golang/mock)                                                                             |
-| Linter                   | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
-| Testing                  | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
-| Load Testing             | [ghz](https://ghz.sh)                                                                                                 |
-| API                      | [gRPC](https://grpc.io/docs/tutorials/basic/go/) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
-| Application Architecture | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
-| Directory Structure      | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
-| CI (Lint & Test)         | [GitHubActions](https://github.com/features/actions)                                                                  |
-| Visualize Code Diagram   | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
-| Sequence Diagram         | [Mermaid](https://mermaid.js.org)                                                                                     |
-| Protobuf Operations      | [buf](https://buf.build)                                                                                              |
-| Instrumentation          | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
-| Logger                   | [zap](https://github.com/uber-go/zap)                                                                                 |
+| Item                      | Description                                                                                                           |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| Golang Version            | [1.19](https://golang.org/doc/go1.19)                                                                                 |
+| Database                  | [timescale](https://www.timescale.com)                                                                                |
+| Migration                 | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
+| moq                       | [mockgen](https://github.com/golang/mock)                                                                             |
+| Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
+| Testing                   | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
+| Load Testing              | [ghz](https://ghz.sh)                                                                                                 |
+| API                       | [gRPC](https://grpc.io/docs/tutorials/basic/go/) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
+| Application Architecture  | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
+| Directory Structure       | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
+| CI (Lint, Test, Generate) | [GitHubActions](https://github.com/features/actions)                                                                  |
+| Visualize Code Diagram    | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
+| Sequence Diagram          | [Mermaid](https://mermaid.js.org)                                                                                     |
+| Protobuf Operations       | [buf](https://buf.build)                                                                                              |
+| Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
+| Logger                    | [zap](https://github.com/uber-go/zap)                                                                                 |
 
 ## Installation
 
@@ -141,6 +143,9 @@ Make sure the database already running, after that we need some tables and dummy
 $ docker-compose -f ./development/docker-compose.yml up migration
 ```
 
+This migration also seeds some test data, because when creating a transaction, will requires existing user id.
+This seeds, will insert 5 users data, from ID 1 to 5.
+
 ### 4. Instrumentation
 
 This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
@@ -173,7 +178,16 @@ Then checks the Go and Proto code style using lint can be done with this command
 $ make lint
 ```
 
-### 7. Run the service
+### 7. Mock
+
+This service using Mock in some places like in the repository, usecase, pkg, etc.
+To automatically updating the mock if the interface changed, easily run with `go generate` command:
+
+```sh
+$ go generate ./...
+```
+
+### 8. Run the service
 
 For running the service, you need the database running and set up some env variables:
 
@@ -194,10 +208,12 @@ Or you can just execute the sh file:
 $ ./scripts/run.sh
 ```
 
-### 8. Test the service
+### 9. Test the service
 
 The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
 
+> NOTE: To test this service need the migration to be done. After that you can choose the User ID's from 1 to 5.
+ 
 If you want to test by GUI client, you can use either BloomRPC (although already no longer active) or Postman.
 For the detail please visit these links:
 * https://github.com/bloomrpc/bloomrpc
@@ -268,7 +284,7 @@ you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](ap
 
 By default HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
 
-### 9. Load Testing
+### 10. Load Testing
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 
@@ -378,6 +394,17 @@ However, for have a clear direction when working in this project, here are some 
 * [pkg](pkg): package code that can be shared.
 * [scripts](scripts): shell script, go script to help build or testing something.
 * [tools](tools): package that need to store on go.mod in order to easily do installation.
+
+## GitHub Actions CI
+
+This project has GitHub Actions CI to do some automation such as:
+
+* [lint](.github/workflows/lint.yml): check the code style.
+* [test](.github/workflows/test.yml): run unit testing and uploaded code coverage artifact.
+* [generate-proto](.github/workflows/generate-proto.yml): generates protobuf files.
+* [generate-rpc-diagram](.github/workflows/generate-rpc-diagram.yml): generates RPC sequence diagram.
+* [generate-diagram](.github/workflows/generate-diagram.yml): generates graph code visualization.
+* [push-file](.github/workflows/push-file.yml): commit and push generated proto, diagram as github-actions[bot] user.
 
 ## Documentation
 
