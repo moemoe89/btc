@@ -1,4 +1,4 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    balance FLOAT
+    balance DECIMAL
 );

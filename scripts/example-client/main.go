@@ -23,11 +23,15 @@ func main() {
 	// Create the client connection.
 	client := rpc.NewBTCServiceClient(conn)
 
+	rand.Seed(time.Now().UnixNano())
+	num := rand.Float64() * 100
+	num = float64(int(num+0.5)) / 100
+
 	// Call CreateTransaction RPC.
 	transaction, err := client.CreateTransaction(context.Background(), &rpc.CreateTransactionRequest{
 		UserId:   1,
 		Datetime: timestamppb.New(time.Now()),
-		Amount:   rand.Float64(),
+		Amount:   num,
 	})
 	if err != nil {
 		log.Fatal(err)
