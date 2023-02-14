@@ -28,7 +28,7 @@ const (
 )
 
 func main() { //nolint: funlen
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(os.Getenv("RABBITMQ_HOST"))
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
@@ -115,7 +115,7 @@ func main() { //nolint: funlen
 
 func createTransaction(trx *Transaction) error {
 	// Dial gRPC server connection.
-	conn, err := grpc.Dial(":"+os.Getenv("SERVER_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(os.Getenv("GRPC_SERVER"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
