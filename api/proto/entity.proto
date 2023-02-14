@@ -16,11 +16,11 @@ message Transaction {
   // The date and time of the created transaction.
   google.protobuf.Timestamp datetime = 2;
   // The amount of the transaction, should greater than 0.
-  float amount = 3;
+  double amount = 3;
 }
 
 // UserBalance
 message UserBalance {
   // The latest balance of a User.
-  float balance = 1;
+  double balance = 1;
 }

@@ -1,12 +1,10 @@
 package trace
 
-//go:generate rm -f ./span_mock.go
-//go:generate mockgen -destination span_mock.go -package trace -mock_names Tracer=GoMockTracer -source span.go
+import "go.opentelemetry.io/otel"
 
 import (
 	"context"
 
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"

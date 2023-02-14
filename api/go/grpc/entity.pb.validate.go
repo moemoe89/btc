@@ -11,7 +11,6 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
-	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -32,53 +31,19 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
-	_ = sort.Sort
 )
 
 // Validate checks the field values on Transaction with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
 func (m *Transaction) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on Transaction with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in TransactionMultiError, or
-// nil if none found.
-func (m *Transaction) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *Transaction) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	// no validation rules for UserId
 
-	if all {
-		switch v := interface{}(m.GetDatetime()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, TransactionValidationError{
-					field:  "Datetime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, TransactionValidationError{
-					field:  "Datetime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetDatetime()).(interface{ Validate() error }); ok {
+	if v, ok := interface{}(m.GetDatetime()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return TransactionValidationError{
 				field:  "Datetime",
@@ -90,28 +55,8 @@ func (m *Transaction) validate(all bool) error {
 
 	// no validation rules for Amount
 
-	if len(errors) > 0 {
-		return TransactionMultiError(errors)
-	}
-
 	return nil
 }
-
-// TransactionMultiError is an error wrapping multiple validation errors
-// returned by Transaction.ValidateAll() if the designated constraints aren't met.
-type TransactionMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m TransactionMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m TransactionMultiError) AllErrors() []error { return m }
 
 // TransactionValidationError is the validation error returned by
 // Transaction.Validate if the designated constraints aren't met.
@@ -168,51 +113,17 @@ var _ interface {
 } = TransactionValidationError{}
 
 // Validate checks the field values on UserBalance with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
 func (m *UserBalance) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UserBalance with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in UserBalanceMultiError, or
-// nil if none found.
-func (m *UserBalance) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UserBalance) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	// no validation rules for Balance
-
-	if len(errors) > 0 {
-		return UserBalanceMultiError(errors)
-	}
 
 	return nil
 }
-
-// UserBalanceMultiError is an error wrapping multiple validation errors
-// returned by UserBalance.ValidateAll() if the designated constraints aren't met.
-type UserBalanceMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UserBalanceMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UserBalanceMultiError) AllErrors() []error { return m }
 
 // UserBalanceValidationError is the validation error returned by
 // UserBalance.Validate if the designated constraints aren't met.

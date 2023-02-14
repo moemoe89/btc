@@ -12,7 +12,7 @@ import (
 
 type Transaction struct {
 	UserID   int64     `json:"user_id"`
-	Amount   float32   `json:"amount"`
+	Amount   float64   `json:"amount"`
 	Datetime time.Time `json:"datetime"`
 }
 
