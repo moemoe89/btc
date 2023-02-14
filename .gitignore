@@ -19,3 +19,6 @@ development/rabbitmq
 
 # vendor
 vendor/
+
+# html
+*.html
