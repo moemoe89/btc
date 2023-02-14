@@ -79,7 +79,7 @@ func (h *httpServer) Run() error {
 
 	di.RegisterCloser("Gateway server", di.NewCloser(h.GracefulStop))
 
-	return nil
+	return <-errorChan
 }
 
 func (h *httpServer) GracefulStop() {
