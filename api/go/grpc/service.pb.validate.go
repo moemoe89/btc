@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -31,39 +32,87 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
+	_ = sort.Sort
 )
 
 // Validate checks the field values on CreateTransactionRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
+// violated, the first error encountered is returned, or nil if there are no violations.
 func (m *CreateTransactionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateTransactionRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateTransactionRequestMultiError, or nil if none found.
+func (m *CreateTransactionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateTransactionRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetUserId() < 1 {
-		return CreateTransactionRequestValidationError{
+		err := CreateTransactionRequestValidationError{
 			field:  "UserId",
 			reason: "value must be greater than or equal to 1",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if m.GetDatetime() == nil {
-		return CreateTransactionRequestValidationError{
+		err := CreateTransactionRequestValidationError{
 			field:  "Datetime",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if val := m.GetAmount(); val > -0.1 && val < 0.1 {
-		return CreateTransactionRequestValidationError{
+		err := CreateTransactionRequestValidationError{
 			field:  "Amount",
 			reason: "value must be outside range (-0.1, 0.1)",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return CreateTransactionRequestMultiError(errors)
 	}
 
 	return nil
 }
+
+// CreateTransactionRequestMultiError is an error wrapping multiple validation
+// errors returned by CreateTransactionRequest.ValidateAll() if the designated
+// constraints aren't met.
+type CreateTransactionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateTransactionRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateTransactionRequestMultiError) AllErrors() []error { return m }
 
 // CreateTransactionRequestValidationError is the validation error returned by
 // CreateTransactionRequest.Validate if the designated constraints aren't met.
@@ -123,35 +172,82 @@ var _ interface {
 
 // Validate checks the field values on ListTransactionRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
+// violated, the first error encountered is returned, or nil if there are no violations.
 func (m *ListTransactionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListTransactionRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListTransactionRequestMultiError, or nil if none found.
+func (m *ListTransactionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListTransactionRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetUserId() < 1 {
-		return ListTransactionRequestValidationError{
+		err := ListTransactionRequestValidationError{
 			field:  "UserId",
 			reason: "value must be greater than or equal to 1",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if m.GetStartDatetime() == nil {
-		return ListTransactionRequestValidationError{
+		err := ListTransactionRequestValidationError{
 			field:  "StartDatetime",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if m.GetEndDatetime() == nil {
-		return ListTransactionRequestValidationError{
+		err := ListTransactionRequestValidationError{
 			field:  "EndDatetime",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ListTransactionRequestMultiError(errors)
 	}
 
 	return nil
 }
+
+// ListTransactionRequestMultiError is an error wrapping multiple validation
+// errors returned by ListTransactionRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ListTransactionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTransactionRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTransactionRequestMultiError) AllErrors() []error { return m }
 
 // ListTransactionRequestValidationError is the validation error returned by
 // ListTransactionRequest.Validate if the designated constraints aren't met.
@@ -211,16 +307,49 @@ var _ interface {
 
 // Validate checks the field values on ListTransactionResponse with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
+// violated, the first error encountered is returned, or nil if there are no violations.
 func (m *ListTransactionResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListTransactionResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListTransactionResponseMultiError, or nil if none found.
+func (m *ListTransactionResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListTransactionResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	for idx, item := range m.GetTransactions() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListTransactionResponseValidationError{
+						field:  fmt.Sprintf("Transactions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListTransactionResponseValidationError{
+						field:  fmt.Sprintf("Transactions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return ListTransactionResponseValidationError{
 					field:  fmt.Sprintf("Transactions[%v]", idx),
@@ -232,8 +361,29 @@ func (m *ListTransactionResponse) Validate() error {
 
 	}
 
+	if len(errors) > 0 {
+		return ListTransactionResponseMultiError(errors)
+	}
+
 	return nil
 }
+
+// ListTransactionResponseMultiError is an error wrapping multiple validation
+// errors returned by ListTransactionResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListTransactionResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTransactionResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTransactionResponseMultiError) AllErrors() []error { return m }
 
 // ListTransactionResponseValidationError is the validation error returned by
 // ListTransactionResponse.Validate if the designated constraints aren't met.
@@ -293,21 +443,60 @@ var _ interface {
 
 // Validate checks the field values on GetUserBalanceRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
+// violated, the first error encountered is returned, or nil if there are no violations.
 func (m *GetUserBalanceRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserBalanceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserBalanceRequestMultiError, or nil if none found.
+func (m *GetUserBalanceRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserBalanceRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetUserId() < 1 {
-		return GetUserBalanceRequestValidationError{
+		err := GetUserBalanceRequestValidationError{
 			field:  "UserId",
 			reason: "value must be greater than or equal to 1",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return GetUserBalanceRequestMultiError(errors)
 	}
 
 	return nil
 }
+
+// GetUserBalanceRequestMultiError is an error wrapping multiple validation
+// errors returned by GetUserBalanceRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetUserBalanceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserBalanceRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserBalanceRequestMultiError) AllErrors() []error { return m }
 
 // GetUserBalanceRequestValidationError is the validation error returned by
 // GetUserBalanceRequest.Validate if the designated constraints aren't met.
