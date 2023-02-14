@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml?query=workflow%3Atest) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-83.6%25-yellowgreen"><!-- end-coverage -->
+[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml?query=workflow%3Atest) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-83.9%25-yellowgreen"><!-- end-coverage -->
 
 BTC Service handles BTC transaction and User balance related data.
 

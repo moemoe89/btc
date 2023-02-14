@@ -33,7 +33,7 @@ func TestBTCRepo_CreateTransaction(t *testing.T) {
 	tests := map[string]func(t *testing.T) test{
 		"Given valid query of Create transaction, When query executed successfully, Return no error": func(t *testing.T) test {
 			userID := int64(1988)
-			amount := float64(100.5)
+			amount := 100.5
 			datetime := time.Now().UTC()
 
 			args := args{
@@ -87,7 +87,7 @@ func TestBTCRepo_CreateTransaction(t *testing.T) {
 		},
 		"Given valid query of Create transaction, When query executed successfully with no User found, Return an error": func(t *testing.T) test {
 			userID := int64(999)
-			amount := float64(100.5)
+			amount := 100.5
 			datetime := time.Now().UTC()
 
 			args := args{
@@ -157,8 +157,8 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 	tests := map[string]func(t *testing.T) test{
 		"Given valid query of Get List transactions, When query executed successfully, Return no error": func(t *testing.T) test {
 			userID := int64(1988)
-			balance1 := float64(100.5)
-			balance2 := float64(900.6)
+			balance1 := 100.5
+			balance2 := 900.6
 
 			// 2023-02-12 02:35:38 +0000 UTC
 			datetime1 := &timestamppb.Timestamp{
@@ -270,7 +270,7 @@ func TestBTCRepo_GetUserBalance(t *testing.T) {
 	tests := map[string]func(t *testing.T) test{
 		"Given valid query of Get User balance, When query executed successfully, Return no error": func(t *testing.T) test {
 			userID := int64(1989)
-			balance := float64(100.5)
+			balance := 100.5
 
 			args := args{
 				ctx:    context.Background(),
