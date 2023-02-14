@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml)
+[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/moemoe89/btc/actions/workflows/ci.yml?query=workflow%3Atest)
 
 BTC Service handles BTC transaction and User balance related data.
 
@@ -28,6 +28,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [8. Run the service](#8-run-the-service)
     - [9. Test the service](#9-test-the-service)
     - [10. Load Testing](#10-load-testing)
+    - [11. Messaging](#11-messaging)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
@@ -56,6 +57,7 @@ BTC Service handles BTC transaction and User balance related data.
 | Protobuf Operations       | [buf](https://buf.build)                                                                                              |
 | Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
 | Logger                    | [zap](https://github.com/uber-go/zap)                                                                                 |
+| Messaging                 | [RabbitMQ](https://www.rabbitmq.com) and(amqp091-go)[https://github.com/rabbitmq/amqp091-go]                          |
 
 ## Installation
 
@@ -359,22 +361,41 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 Then, you can run this `ghz` command to do Load Testing for specific RPC, for the example:
 
-### 1. CreateTransaction RPC:
+#### 1. CreateTransaction RPC:
 
 ```sh
 ghz --insecure --proto ./api/proto/service.proto --call BTCService.CreateTransaction -d '{ "user_id": 1, "datetime": { "seconds": 1676339196, "nanos": 0 }, "amount": 100 }' 0.0.0.0:8080 -O html -o load_testing_create_transaction.html
 ```
 
-### 2. ListTransaction RPC:
+#### 2. ListTransaction RPC:
 
 ```sh
 ghz --insecure --proto ./api/proto/service.proto --call BTCService.ListTransaction -d '{ "user_id": 1, "start_datetime": { "seconds": 1676339196, "nanos": 0 }, "end_datetime": { "seconds": 1676339196, "nanos": 0 } }' 0.0.0.0:8080 -O html -o load_testing_list_transaction.html
 ```
 
-### 3. GetUserBalance RPC:
+#### 3. GetUserBalance RPC:
 
 ```sh
 ghz --insecure --proto ./api/proto/service.proto --call BTCService.GetUserBalance -d '{ "user_id": 1 }' 0.0.0.0:8080 -O html -o load_testing_get_user_balance.html
+```
+
+### 11. Messaging
+
+In order to avoid failing when creates the transaction and support for easily retry,
+there's a simple Event based system using RabbitMQ.
+
+To test the event based you need to run the rabbitmq, the server and the consumer server.
+
+```shell
+$ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin jaeger rabbitmq
+$ ./scripts/run.sh
+$ ./scripts/run-consumer.sh
+```
+
+After that you can try to send a message by publishing a message.
+
+```shell
+go run ./scripts/example-publish
 ```
 
 ## Project Structure

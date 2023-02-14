@@ -5,9 +5,11 @@ go 1.19
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.9.1
 	github.com/golang/mock v1.6.0
+	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/ofabry/go-callvis v0.6.1
+	github.com/rabbitmq/amqp091-go v1.7.0
 	github.com/stretchr/testify v1.8.1
 	github.com/yoheimuta/protolint v0.42.2
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.39.0

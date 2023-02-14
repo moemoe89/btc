@@ -16,6 +16,9 @@ import (
 func main() {
 	// Dial gRPC server connection.
 	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Create the client connection.
 	client := rpc.NewBTCServiceClient(conn)
