@@ -57,7 +57,7 @@ BTC Service handles BTC transaction and User balance related data.
 | Protobuf Operations       | [buf](https://buf.build)                                                                                              |
 | Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
 | Logger                    | [zap](https://github.com/uber-go/zap)                                                                                 |
-| Messaging                 | [RabbitMQ](https://www.rabbitmq.com) and(amqp091-go)[https://github.com/rabbitmq/amqp091-go]                          |
+| Messaging                 | [RabbitMQ](https://www.rabbitmq.com) and [amqp091-go](https://github.com/rabbitmq/amqp091-go)                         |
 
 ## Installation
 
