@@ -117,6 +117,23 @@ services:
       - ./redis/data:/data
     networks:
       - fullstack
+  # schemaspy
+  schemaspy:
+    image: schemaspy/schemaspy:snapshot
+    command: [
+      "-configFile",
+      "schemaspy.properties",
+      "-imageformat",
+      "svg"
+    ]
+    depends_on:
+      - timescaledb
+    volumes:
+      - ./schemaspy.properties:/schemaspy.properties
+      - ./schemaspy/output:/output
+      - ./schemaspy/config:/config
+    networks:
+      - fullstack
 networks:
   fullstack:
     driver: bridge
