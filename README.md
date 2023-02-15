@@ -21,15 +21,16 @@ BTC Service handles BTC transaction and User balance related data.
     - [1. API](#1-api)
     - [2. TimescaleDB + GUI](#2-timescaledb--gui)
     - [3. Migration](#3-migration)
-    - [4. Cache](#4-cache)
-    - [5. Instrumentation](#5-instrumentation)
-    - [6. Unit Test](#6-unit-test)
-    - [7. Linter](#7-linter)
-    - [8. Mock](#8-mock)
-    - [9. Run the service](#9-run-the-service)
-    - [10. Test the service](#10-test-the-service)
-    - [11. Load Testing](#11-load-testing)
-    - [12. Messaging](#12-messaging)
+    - [4. Database Schema](#4-dataase-schema)
+    - [5. Cache](#5-cache)
+    - [6. Instrumentation](#6-instrumentation)
+    - [7. Unit Test](#7-unit-test)
+    - [8. Linter](#8-linter)
+    - [9. Mock](#9-mock)
+    - [10. Run the service](#10-run-the-service)
+    - [11. Test the service](#11-test-the-service)
+    - [12. Load Testing](#12-load-testing)
+    - [13. Messaging](#13-messaging)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
@@ -44,6 +45,7 @@ BTC Service handles BTC transaction and User balance related data.
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | Golang Version            | [1.19](https://golang.org/doc/go1.19)                                                                                 |
 | Database                  | [TimescaleDB](https://www.timescale.com) and [pgx](https://github.com/jackc/pgx)                                      |
+| Database Documentation    | [SchemaSpy](https://schemaspy.org)                                                                                    |
 | Cache                     | [Redis](https://redis.com) and [go-redis](https://github.com/redis/go-redis)                                          |
 | Migration                 | [migrate](https://github.com/golang-migrate/migrate)                                                                  |
 | moq                       | [mockgen](https://github.com/golang/mock)                                                                             |
@@ -166,7 +168,20 @@ $ docker-compose -f ./development/docker-compose.yml up migration
 This migration also seeds some test data, because when creating a transaction, will require existing User ID.
 By this seeds, we will have 5 users test data, from ID 1 to 5.
 
-### 4. Cache
+### 4. Database Schema
+
+If you want to check the overall Database Schema, you can use a UI tool based on browser
+using SchemaSpy.
+
+The docker-compose for SchemaSpy already exist, but make sure to run the `tiemscaledb` and do the `migration`, the you can just run this command:
+
+```shell
+$ docker-compose -f ./development/docker-compose.yml up schemaspy
+```
+
+The HTML and assets file will be generated under development/schemaspy/output directory.
+
+### 5. Cache
 
 When getting transactions list and user balance, there's a cache implemented using Redis
 in order to have middle layer and avoid call the main DB frequently.
@@ -177,7 +192,7 @@ To start runing Redis, there's a docker-compose command available:
 $ docker-compose -f ./development/docker-compose.yml up redis
 ```
 
-### 5. Instrumentation
+### 6. Instrumentation
 
 This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
 The data exported to Jaeger and can be seen in the Jaeger UI [http://localhost:16686](http://localhost:16686)
@@ -188,7 +203,7 @@ For running the Jaeger exporter, easily run with docker-compose command:
 $ docker-compose -f ./development/docker-compose.yml up jaeger
 ```
 
-### 6. Unit Test
+### 7. Unit Test
 
 Make sure the database already running, then you can simply execute the following command to run all test cases in this service:
 
@@ -196,7 +211,7 @@ Make sure the database already running, then you can simply execute the followin
 $ make test
 ```
 
-### 7. Linter
+### 8. Linter
 
 For running the linter make sure these libraries already installed in your system:
 
@@ -209,7 +224,7 @@ Then checks the Go and Proto code style using lint can be done with this command
 $ make lint
 ```
 
-### 8. Mock
+### 9. Mock
 
 This service using Mock in some places like in the repository, usecase, pkg, etc.
 To automatically updating the mock if the interface changed, easily run with `go generate` command:
@@ -218,7 +233,7 @@ To automatically updating the mock if the interface changed, easily run with `go
 $ make mock
 ```
 
-### 9. Run the service
+### 10. Run the service
 
 For running the service, you need the database running and set up some env variables:
 
@@ -240,7 +255,7 @@ Or you can just execute the sh file:
 $ ./scripts/run.sh
 ```
 
-### 10. Test the service
+### 11. Test the service
 
 The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
 
@@ -316,7 +331,7 @@ you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](ap
 
 By default HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
 
-### 11. Load Testing
+### 12. Load Testing
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 
@@ -405,7 +420,7 @@ ghz --insecure --proto ./api/proto/service.proto --call BTCService.ListTransacti
 ghz --insecure --proto ./api/proto/service.proto --call BTCService.GetUserBalance -d '{ "user_id": 1 }' 0.0.0.0:8080 -O html -o load_testing_get_user_balance.html
 ```
 
-### 12. Messaging
+### 13. Messaging
 
 In order to avoid failing when creates the transaction and support for easily retry,
 there's a simple Event based system using RabbitMQ.

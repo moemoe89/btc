@@ -17,6 +17,7 @@ main-consumer
 development/timescaledb
 development/rabbitmq
 development/redis
+development/schemaspy
 
 # vendor
 vendor/
