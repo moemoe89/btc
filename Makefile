@@ -47,3 +47,9 @@ protoc:
 mock:
 	@echo "\n>>> Run Generate Mock\n"
 	go generate ./...
+
+build-protoc:
+	docker build -t btc-protoc -f build/protoc/Dockerfile .
+
+docker-protoc:
+	docker run --rm -v `pwd`:/go/src/github.com/moemoe89/btc btc-protoc

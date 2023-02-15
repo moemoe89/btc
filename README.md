@@ -118,6 +118,18 @@ Then, generating the Protobuf files can be done my this command:
 $ make protoc
 ```
 
+#### NOTE:
+
+If you have any difficulties installing all dependencies needed for generating the proto files,
+you can easily build the docker image and use that instead.
+
+Here are 2 commands for building and generating:
+
+```shell
+make build-protoc
+make docker-protoc
+```
+
 ### 2. TimescaleDB + GUI
 
 Run TimescaleDB locally with the GUI (pgAdmin) can be executed with the following docker-compose command:
