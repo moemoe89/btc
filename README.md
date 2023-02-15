@@ -21,7 +21,7 @@ BTC Service handles BTC transaction and User balance related data.
     - [1. API](#1-api)
     - [2. TimescaleDB + GUI](#2-timescaledb--gui)
     - [3. Migration](#3-migration)
-    - [4. Database Schema](#4-dataase-schema)
+    - [4. Database Schema](#4-database-schema)
     - [5. Cache](#5-cache)
     - [6. Instrumentation](#6-instrumentation)
     - [7. Unit Test](#7-unit-test)
