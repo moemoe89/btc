@@ -2,6 +2,7 @@ package datastore_test
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -13,6 +14,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func TestMain(m *testing.M) {
+	var code int
+
+	defer func() {
+		os.Exit(code)
+	}()
+
+	_ = os.Setenv("APP_ENV", "test")
+	_ = os.Setenv("IS_REPLICA", "false")
+
+	code = m.Run()
+}
 
 func TestBTCRepo_CreateTransaction(t *testing.T) {
 	type args struct {
@@ -28,7 +42,7 @@ func TestBTCRepo_CreateTransaction(t *testing.T) {
 		afterFunc  func(*testing.T)
 	}
 
-	db := datastore.GetDatabase()
+	db := datastore.GetDatabaseMaster()
 
 	tests := map[string]func(t *testing.T) test{
 		"Given valid query of Create transaction, When query executed successfully, Return no error": func(t *testing.T) test {
@@ -152,7 +166,7 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 		afterFunc  func(*testing.T)
 	}
 
-	db := datastore.GetDatabase()
+	db := datastore.GetDatabaseMaster()
 
 	tests := map[string]func(t *testing.T) test{
 		"Given valid query of Get List transactions, When query executed successfully, Return no error": func(t *testing.T) test {
@@ -265,7 +279,7 @@ func TestBTCRepo_GetUserBalance(t *testing.T) {
 		afterFunc  func(*testing.T)
 	}
 
-	db := datastore.GetDatabase()
+	db := datastore.GetDatabaseMaster()
 
 	tests := map[string]func(t *testing.T) test{
 		"Given valid query of Get User balance, When query executed successfully, Return no error": func(t *testing.T) test {

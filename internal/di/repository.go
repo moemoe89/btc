@@ -7,7 +7,7 @@ import (
 
 // GetBaseRepo returns BaseRepo instance.
 func GetBaseRepo() *datastore.BaseRepo {
-	return datastore.NewBaseRepo(datastore.GetDatabase())
+	return datastore.NewBaseRepo(datastore.GetDatabaseMaster(), datastore.GetDatabaseSlave())
 }
 
 // GetBTCRepo returns BTCRepo instance.
