@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/btc/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-83.9%25-brightgreen"><!-- end-coverage -->
+[![CI Workflow](https://github.com/moemoe89/btc/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/btc/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-83.7%25-brightgreen"><!-- end-coverage -->
 
 BTC Service handles BTC transaction and User balance related data.
 
@@ -134,23 +134,38 @@ make docker-protoc
 
 ### 2. TimescaleDB + GUI
 
+#### NOTE
+In this project, the Database Replication could be implemented, then we need 2 databases Master and Slave.
+But if only 1 database exists, we can easily the replication on the App side by setting the env variables.
+
+From `IS_REPLICA` `true` to `false`.
+
 Run TimescaleDB locally with the GUI (pgAdmin) can be executed with the following docker-compose command:
 
 ```sh
-$ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin
+$ docker-compose -f ./development/docker-compose.yml up timescaledb-master
+$ docker-compose -f ./development/docker-compose.yml up timescaledb-slave
+$ docker-compose -f ./development/docker-compose.yml up pgadmin
 ```
 
 > NOTE:
-> TimescaleDB will use port 5432 and pgAdmin will use 5050, please make sure those port are unused in your system.
-> If the port conflicted, you can change the port on the [development/docker-compose.yml](docker-compose.yml) file.
+> TimescaleDB will use port 5432 (Master) and 5433 (Slave) and pgAdmin will use 5050, please make sure those port are unused in your system.
+> If the port conflicted, you can change the port on the [development/docker-compose.yml](development/docker-compose.yml) file.
 
 The default email & password for pgAdmin are:
 * email: `admin@admin.com` 
 * password: `admin123`
 
-With this following TimescaleDB info:
-* host: `timescaledb` -> change this to `localhost` if you try to connect from outside Docker
+With this following TimescaleDB Master info:
+* host: `timescaledb-master` -> change this to `localhost` if you try to connect from outside Docker
 * port: `5432`
+* username: `test`
+* password: `test`
+* db: `test`
+
+And this is the info for TimescaleDB Slave:
+* host: `timescaledb-slave` -> change this to `localhost` if you try to connect from outside Docker
+* port: `5433`
 * username: `test`
 * password: `test`
 * db: `test`
@@ -173,20 +188,20 @@ By this seeds, we will have 5 users test data, from ID 1 to 5.
 If you want to check the overall Database Schema, you can use a UI tool based on browser
 using SchemaSpy.
 
-The docker-compose for SchemaSpy already exist, but make sure to run the `tiemscaledb` and do the `migration`, the you can just run this command:
+The docker-compose for SchemaSpy already exist, but make sure to run the `tiemscaledb-master` and do the `migration`, thne you can just run this command:
 
 ```shell
 $ docker-compose -f ./development/docker-compose.yml up schemaspy
 ```
 
-The HTML and assets file will be generated under development/schemaspy/output directory.
+The HTML and assets file will be generated under `development/schemaspy/output` directory.
 
 ### 5. Cache
 
 When getting transactions list and user balance, there's a cache implemented using Redis
 in order to have middle layer and avoid call the main DB frequently.
 
-To start runing Redis, there's a docker-compose command available:
+To start running Redis, there's a docker-compose command available:
 
 ```sh
 $ docker-compose -f ./development/docker-compose.yml up redis
@@ -238,14 +253,31 @@ $ make mock
 For running the service, you need the database running and set up some env variables:
 
 ```
+# app config
 export APP_ENV=dev
 export SERVER_PORT=8080
-export POSTGRES_USER=test
-export POSTGRES_PASSWORD=test
-export POSTGRES_HOST=localhost
-export POSTGRES_PORT=5432
-export POSTGRES_DB=test
+
+# master db config
+export POSTGRES_USER_MASTER=test
+export POSTGRES_PASSWORD_MASTER=test
+export POSTGRES_HOST_MASTER=localhost
+export POSTGRES_PORT_MASTER=5432
+export POSTGRES_DB_MASTER=test
+
+# slave db config
+export POSTGRES_USER_SLAVE=test
+export POSTGRES_PASSWORD_SLAVE=test
+export POSTGRES_HOST_SLAVE=localhost
+export POSTGRES_PORT_SLAVE=5433
+export POSTGRES_DB_SLAVE=test
+
+# use replica config
+export IS_REPLICA=true
+
+# tracing config
 export OTEL_AGENT=http://localhost:14268/api/traces
+
+# cache config
 export REDIS_HOST=localhost:6379
 ```
 
@@ -329,7 +361,7 @@ Also don't forget to set the import path e.g. `{YOUR-DIR}/btc/api/proto`
 This service has HTTP server built on gRPC-Gateway, if you prefer to test using HTTP instead HTTP2 protocol,
 you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](api/openapiv2/proto/service.swagger.json) and then copy paste to this URL https://editor.swagger.io/
 
-By default HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
+By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
 
 ### 12. Load Testing
 
@@ -428,7 +460,7 @@ there's a simple Event based system using RabbitMQ.
 To test the event based you need to run the rabbitmq, the server and the consumer server.
 
 ```shell
-$ docker-compose -f ./development/docker-compose.yml up timescaledb pgadmin jaeger rabbitmq
+$ docker-compose -f ./development/docker-compose.yml up timescaledb-master timescaledb-slave pgadmin jaeger rabbitmq
 $ ./scripts/run.sh
 $ ./scripts/run-consumer.sh
 ```
@@ -445,7 +477,7 @@ go run ./scripts/example-publish
 > 
 > `docker-compose -f ./development/docker-compose.yml up`
 >
-> Then you will have all services running like `timescaledb`, `pgadmin`, `jaeger`, `rabbitmq`, `redis`
+> Then you will have all services running like `timescaledb-master`, `timescaledb-slave`, `pgadmin`, `jaeger`, `rabbitmq`, `redis`
 > also running the `migration` and run `btc-server` + `btc-consumer`.
 
 ## Project Structure

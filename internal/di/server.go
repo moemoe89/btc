@@ -15,10 +15,7 @@ import (
 
 var (
 	grpcServerOnce sync.Once
-)
-
-var (
-	btcServer server.Server
+	btcServer      server.Server
 )
 
 // GetBTCGRPCServer returns gRPC server instance for BTC service.

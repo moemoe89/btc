@@ -14,7 +14,8 @@ btc
 main-consumer
 
 # development data
-development/timescaledb
+development/primary/data
+development/replica/data
 development/rabbitmq
 development/redis
 development/schemaspy

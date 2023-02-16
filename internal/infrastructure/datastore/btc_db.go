@@ -36,7 +36,7 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 
 	var err error
 
-	err = r.db.QueryRow(ctx, "SELECT id FROM users WHERE id = $1", params.UserID).Scan(&id)
+	err = r.dbSlave.QueryRow(ctx, "SELECT id FROM users WHERE id = $1", params.UserID).Scan(&id)
 	if err == pgx.ErrNoRows {
 		return nil, fmt.Errorf("user id: %d not found: %w", params.UserID, ErrNotFound)
 	}
@@ -45,7 +45,7 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 		return nil, err
 	}
 
-	tx, err := r.db.Begin(ctx)
+	tx, err := r.dbMaster.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to begin transaction: %v", err)
 	}
@@ -88,7 +88,7 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 func (r *btcRepo) ListTransaction(ctx context.Context, params *repository.ListTransactionParams) ([]*rpc.Transaction, error) {
 	query := `SELECT datetime, user_id, amount FROM transactions WHERE user_id = $1 AND datetime >= $2::timestamptz AND datetime <= $3::timestamptz`
 
-	rows, err := r.db.Query(ctx, query, params.UserID, params.StartDatetime, params.EndDatetime)
+	rows, err := r.dbSlave.Query(ctx, query, params.UserID, params.StartDatetime, params.EndDatetime)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func (r *btcRepo) ListTransaction(ctx context.Context, params *repository.ListTr
 func (r *btcRepo) GetUserBalance(ctx context.Context, userID int64) (*rpc.UserBalance, error) {
 	var balance float64
 
-	err := r.db.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", userID).Scan(&balance)
+	err := r.dbSlave.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", userID).Scan(&balance)
 	if err == pgx.ErrNoRows {
 		return nil, fmt.Errorf("user id: %d not found: %w", userID, ErrNotFound)
 	}

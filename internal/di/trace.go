@@ -15,10 +15,7 @@ import (
 
 var (
 	traceProviderOnce sync.Once
-)
-
-var (
-	traceProvider trace.Provider
+	traceProvider     trace.Provider
 )
 
 type wrapProvider struct {
