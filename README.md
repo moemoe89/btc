@@ -68,7 +68,9 @@ BTC Service handles BTC transaction and User balance related data.
 
 ---
 
-![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/219916138-ace8a968-5010-4bcb-8070-f8720b44d022.png)
+[Excalidraw link](https://excalidraw.com/#json=Tg3TixKN1nXBzgSayb-fw,xZUVn2EnkMuuPWL_vmGjtA)
+
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/219921725-ccfd6d98-c60c-4340-86bf-1dd97ff7d7e1.png)
 
 
 ## Installation
