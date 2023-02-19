@@ -14,6 +14,7 @@ BTC Service handles BTC transaction and User balance related data.
 
 - [Table of Contents](#table-of-contents)
 - [Project Summary](#project-summary)
+- [Architecture Diagram](#architecture-diagram)
 - [Installation](#installation)
     - [1. Set Up Golang Development Environment](#1-set-up-golang-development-environment)
     - [2. Install Development Utility Tools](#2-install-development-utility-tools)
@@ -62,6 +63,13 @@ BTC Service handles BTC transaction and User balance related data.
 | Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
 | Logger                    | [zap](https://github.com/uber-go/zap)                                                                                 |
 | Messaging                 | [RabbitMQ](https://www.rabbitmq.com) and [amqp091-go](https://github.com/rabbitmq/amqp091-go)                         |
+
+## Architecture Diagram
+
+---
+
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/219916138-ace8a968-5010-4bcb-8070-f8720b44d022.png)
+
 
 ## Installation
 
