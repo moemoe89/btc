@@ -37,6 +37,7 @@ BTC Service handles BTC transaction and User balance related data.
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
   - [RPC Sequence Diagram](#rpc-sequence-diagram)
+- [TODO](#todo)
 
 <!-- /code_chunk_output -->
 
@@ -557,3 +558,21 @@ To generate the RPC sequence diagram, there's a Makefile command that can be use
 3. [ListTransaction RPC - Sequence Diagram](docs/sequence-diagrams/rpc/list-transaction.md)
 
 <!-- end rpc sequence diagram doc -->
+
+## TODO
+
+---
+
+In the future, here is the Architecture Diagram want to achieve to improve the performance.
+
+* Basically need to separate the service into Create & Search service, following CQRS pattern and using event based for the communication.
+
+* Create service will have responsibility only for inserting the data and trigger message to Search service. To create the transaction need to publish an event from client.
+
+* Search service will have responsibility regarding searching data such as search transactions and get user balance. Client can call this service directly using gRPC or REST (gRPC-Gateway).
+Search service also do indexing the transaction data into search engine service like Elasticsearch, triggered from Create service by event.
+For the user balance still getting from replica database, and both transaction and user balance will have a middle layer cache using Redis. Just in case connection to Elasticsearch fail, the search service still be able to get the data from replica database directly.
+
+[Excalidraw](https://excalidraw.com/#json=CoRXGlqMhS8bkU0vYYIZX,RfMXuYf8MW-fcjDQpOfWLg)
+
+![Future-Architecture-Diagram](https://user-images.githubusercontent.com/7221739/219995890-908ff091-8646-439e-a2d4-87761caaa490.png)
