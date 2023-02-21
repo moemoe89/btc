@@ -196,9 +196,12 @@ func TestBTCRepo_ListTransaction(t *testing.T) {
 
 			want := []*rpc.Transaction{
 				{
-					UserId:   userID,
-					Datetime: datetime1,
-					Amount:   balance1,
+					UserId: userID,
+					Datetime: &timestamppb.Timestamp{
+						Seconds: 1676167200,
+						Nanos:   0,
+					},
+					Amount: balance1,
 				},
 			}
 
