@@ -86,7 +86,10 @@ func (r *btcRepo) CreateTransaction(ctx context.Context, params *repository.Crea
 // ListTransaction get the list of records for BTC transaction.
 // The record can be filtered by specific User.
 func (r *btcRepo) ListTransaction(ctx context.Context, params *repository.ListTransactionParams) ([]*rpc.Transaction, error) {
-	query := `SELECT datetime, user_id, amount FROM transactions WHERE user_id = $1 AND datetime >= $2::timestamptz AND datetime <= $3::timestamptz`
+	query := `SELECT date_trunc('hour', datetime) as datetime, user_id, SUM(amount) AS amount
+				FROM transactions
+					WHERE user_id = $1 AND datetime >= $2::timestamptz AND datetime <= $3::timestamptz
+						GROUP BY datetime, user_id`
 
 	rows, err := r.dbSlave.Query(ctx, query, params.UserID, params.StartDatetime, params.EndDatetime)
 	if err != nil {
