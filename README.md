@@ -69,9 +69,9 @@ BTC Service handles BTC transaction and User balance related data.
 
 ---
 
-[Excalidraw link](https://excalidraw.com/#json=Tg3TixKN1nXBzgSayb-fw,xZUVn2EnkMuuPWL_vmGjtA)
+[Excalidraw link](https://excalidraw.com/#json=l2lSpGvdr3pzL7VN9__qD,gkfkHNTucXGdPXNNC7DBHw)
 
-![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/219921725-ccfd6d98-c60c-4340-86bf-1dd97ff7d7e1.png)
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/222329857-93e39281-7440-476c-ab97-40f561728539.png)
 
 
 ## Installation
@@ -145,6 +145,8 @@ make docker-protoc
 
 ### 2. TimescaleDB + GUI
 
+![pgAdmin](https://user-images.githubusercontent.com/7221739/222328956-6db95f91-cffc-43fe-8e31-6c051c11f8e5.png)
+
 #### NOTE
 In this project, the Database Replication could be implemented, then we need 2 databases Master and Slave.
 But if only 1 database exists, we can easily the replication on the App side by setting the env variables.
@@ -196,6 +198,8 @@ By this seeds, we will have 5 users test data, from ID 1 to 5.
 
 ### 4. Database Schema
 
+![SchemaSpy](https://user-images.githubusercontent.com/7221739/222328524-7b8178dd-1acc-4093-9e00-12d35d4c5a6c.png)
+
 If you want to check the overall Database Schema, you can use a UI tool based on browser
 using SchemaSpy.
 
@@ -219,6 +223,8 @@ $ docker-compose -f ./development/docker-compose.yml up redis
 ```
 
 ### 6. Instrumentation
+
+![Jaeger](https://user-images.githubusercontent.com/7221739/222329540-55f8c982-becd-43d5-a4a7-fca8661f1c25.png)
 
 This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
 The data exported to Jaeger and can be seen in the Jaeger UI [http://localhost:16686](http://localhost:16686)
@@ -317,6 +323,8 @@ Basically you just need to import the [api/proto/service.proto](api/proto/servic
 
 #### BloomRPC
 
+![BloomRPC](https://user-images.githubusercontent.com/7221739/222319521-2bb079a9-ff78-43b8-902f-705d7f816a20.png)
+
 BloomRPC will have these issues when trying to import the proto file:
 
 ```
@@ -349,6 +357,8 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 #### Postman
 
+![Postman](https://user-images.githubusercontent.com/7221739/222329685-5a1c7499-11c3-4985-9f7b-0fd504da341a.png)
+
 There's some issue when importing to Postman. Basically we need to do the same things like BloomRPC and disable the validate import.
 
 ```protobuf
@@ -369,12 +379,16 @@ Also don't forget to set the import path e.g. `{YOUR-DIR}/btc/api/proto`
 
 #### gRPC-Gateway
 
+![Swagger](https://user-images.githubusercontent.com/7221739/222329119-dad08930-4878-4f4e-a976-31ffa91f863e.png)
+
 This service has HTTP server built on gRPC-Gateway, if you prefer to test using HTTP instead HTTP2 protocol,
 you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](api/openapiv2/proto/service.swagger.json) and then copy paste to this URL https://editor.swagger.io/
 
 By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then HTTP server will run on 8081.
 
 ### 12. Load Testing
+
+![ghz](https://user-images.githubusercontent.com/7221739/222329410-c29564da-e4ca-4870-b0d0-ecccfdcf4593.png)
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 
@@ -515,6 +529,8 @@ However, for have a clear direction when working in this project, here are some 
 
 ## GitHub Actions CI
 
+![GitHubActionsCI](https://user-images.githubusercontent.com/7221739/222317570-2f8098e1-4a66-4f77-bac4-f7628a8dec0b.png)
+
 This project has GitHub Actions CI to do some automation such as:
 
 * [lint](.github/workflows/lint.yml): check the code style.
@@ -527,6 +543,8 @@ This project has GitHub Actions CI to do some automation such as:
 ## Documentation
 
 ### Visualize Code Diagram
+
+![GraphDiagram](https://user-images.githubusercontent.com/7221739/222317676-b4b33482-2ddb-459e-8cbe-97fdf93cd789.png)
 
 To help give a better understanding about reading the code
 such as relations with packages and types, here are some diagrams listed
@@ -542,6 +560,8 @@ generated automatically using [https://github.com/ofabry/go-callvis](https://git
 <!-- end diagram doc -->
 
 ### RPC Sequence Diagram
+
+![SequenceDiagram](https://user-images.githubusercontent.com/7221739/222317786-aaf2b078-b26b-43cb-98f8-1599f12b46c0.png)
 
 To help give a better understanding about reading the RPC flow
 such as relations with usecases and repositories, here are some sequence diagrams (generated automatically) listed in Markdown file and written in Mermaid JS [https://mermaid-js.github.io/mermaid/](https://mermaid-js.github.io/mermaid/) format.
@@ -573,6 +593,6 @@ In the future, here is the Architecture Diagram want to achieve to improve the p
 Search service also do indexing the transaction data into search engine service like Elasticsearch, triggered from Create service by event.
 For the user balance still getting from replica database, and both transaction and user balance will have a middle layer cache using Redis. Just in case connection to Elasticsearch fail, the search service still be able to get the data from replica database directly.
 
-[Excalidraw](https://excalidraw.com/#json=CoRXGlqMhS8bkU0vYYIZX,RfMXuYf8MW-fcjDQpOfWLg)
+[Excalidraw](https://excalidraw.com/#json=VZfAhQiwJ7FpvFutyrU4t,Uoutk-t-s-NbcGOzxid-WQ)
 
-![Future-Architecture-Diagram](https://user-images.githubusercontent.com/7221739/219995890-908ff091-8646-439e-a2d4-87761caaa490.png)
+![Future-Architecture-Diagram](https://user-images.githubusercontent.com/7221739/222329982-b963cab4-9735-4054-9c7b-0b1dfa4984cc.png)
